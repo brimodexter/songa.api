@@ -1,0 +1,11 @@
+{
+  "name": "songa.api",
+  "version": "0.0.1",
+  "description": "This is the backend application that will help run the backend of the Songa application",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "ISC"
+}
