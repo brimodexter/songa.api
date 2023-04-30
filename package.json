@@ -2,10 +2,16 @@
   "name": "songa.api",
   "version": "0.0.1",
   "description": "This is the backend application that will help run the backend of the Songa application",
-  "main": "src/app.js",
+  "main": "./src/app.js",
   "scripts": {
     "test": "test"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.39.0"
+  }
 }
