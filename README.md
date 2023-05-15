@@ -11,10 +11,10 @@ Songa API is the official backend API for the Songa application that helps the p
 
 ## Architecture
 
-- MicroServices
+<!-- - MicroServices
 
 ![image](https://user-images.githubusercontent.com/61131314/236658041-a4e5d895-37b4-46ec-bf51-8d494ce019a3.png)
-
+ -->
 **Note:* This is just the overview. It's not detailed and is subject to be updated.
 
 ## Authors
