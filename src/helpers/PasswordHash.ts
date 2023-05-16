@@ -11,7 +11,19 @@ const PasswordHash = async (password: string) => {
 
     return { salt, passwordHashed };
   } catch (err) {
-    throw err; // Re-throw the error to propagate it
+    throw err;
+  }
+};
+interface Props {
+  password: string;
+  passwordHashed: string;
+}
+export const DecryptPassword = async ({ password, passwordHashed }: Props) => {
+  try {
+    const passwordMatch = bcrypt.compareSync(password, passwordHashed);
+    return passwordMatch;
+  } catch (err) {
+    throw err;
   }
 };
 
