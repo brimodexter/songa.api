@@ -10,3 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model CustomerCareAgent {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  email     String   @unique
+  first_name   String?
+  last_name      String?
+  password String
+  salt String
+  is_active      Boolean     @default(false)
+  @@map("customer care agents")
+}
