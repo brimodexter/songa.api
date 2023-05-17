@@ -5,7 +5,6 @@
   "main": "./src/index.ts",
   "scripts": {
     "test": "test",
-    "start:dev": "nodemon ./src/index.ts",
     "dev": "nodemon ./src/index.ts"
   },
   "author": "",
