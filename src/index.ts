@@ -2,10 +2,10 @@ import express from "express";
 import bodyParser from "body-parser";
 import UserAuthRoutes from "./routes/userAuthRoutes";
 import cors from "cors";
+import { Express } from "express";
 
-
-const app = express();
-const port = 3001;
+const app: Express = express();
+const port: number = 3001;
 
 app.use(bodyParser.json());
 app.use(
@@ -20,7 +20,7 @@ app.get("/", (req: express.Request, res: express.Response) => {
   res.send("hello motherfucker...");
 });
 
-const start = async () => {
+const start = async (): Promise<void> => {
   await app.listen(port, () => {
     console.log("starting server....");
   });
