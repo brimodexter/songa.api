@@ -7,13 +7,14 @@ interface CheckUserProps {
     email?: string | null;
     id?: string;
 }
+
 export type CheckUserResult = {
     userPresent: boolean;
     user: User | null;
 };
 
 export const checkUser = async (
-    { phone, email, id }: CheckUserProps,
+    {phone, email, id}: CheckUserProps,
     select?: Prisma.UserSelect
 ): Promise<CheckUserResult | undefined> => {
     console.log(phone, email, id)
@@ -25,9 +26,9 @@ export const checkUser = async (
             select: select,
         });
         if (user) {
-            return { userPresent: true, user: user } as CheckUserResult;
+            return {userPresent: true, user: user} as CheckUserResult;
         }
-        return { userPresent: false, user: null } as CheckUserResult;
+        return {userPresent: false, user: null} as CheckUserResult;
     }
     if (phone) {
         const user = await prisma.user.findUnique({
@@ -37,9 +38,9 @@ export const checkUser = async (
             select: select,
         });
         if (user) {
-            return { userPresent: true, user: user } as CheckUserResult;
+            return {userPresent: true, user: user} as CheckUserResult;
         }
-        return { userPresent: false, user: null } as CheckUserResult;
+        return {userPresent: false, user: null} as CheckUserResult;
     }
     if (email) {
         const user = await prisma.user.findUnique({
@@ -49,18 +50,17 @@ export const checkUser = async (
             select: select,
         });
         if (user) {
-            return { userPresent: true, user: user } as CheckUserResult;
+            return {userPresent: true, user: user} as CheckUserResult;
         }
-        return { userPresent: false, user: null } as CheckUserResult;
+        return {userPresent: false, user: null} as CheckUserResult;
     }
     return undefined;
 };
 
-export const checkCustomeCareAgent = async (
-    { phone, email, id }: CheckUserProps,
+export const checkCustomerCareAgent = async (
+    {phone, email, id}: CheckUserProps,
     select?: Prisma.UserSelect
 ): Promise<CheckUserResult | undefined> => {
-    console.log(phone, email, id)
     if (id) {
         const user = await prisma.customerCareAgent.findUnique({
             where: {
@@ -69,9 +69,9 @@ export const checkCustomeCareAgent = async (
             select: select,
         });
         if (user) {
-            return { userPresent: true, user: user } as CheckUserResult;
+            return {userPresent: true, user: user} as CheckUserResult;
         }
-        return { userPresent: false, user: null } as CheckUserResult;
+        return {userPresent: false, user: null} as CheckUserResult;
     }
     if (email) {
         const user = await prisma.customerCareAgent.findUnique({
@@ -81,9 +81,9 @@ export const checkCustomeCareAgent = async (
             select: select,
         });
         if (user) {
-            return { userPresent: true, user: user } as CheckUserResult;
+            return {userPresent: true, user: user} as CheckUserResult;
         }
-        return { userPresent: false, user: null } as CheckUserResult;
+        return {userPresent: false, user: null} as CheckUserResult;
     }
     return undefined;
 };
