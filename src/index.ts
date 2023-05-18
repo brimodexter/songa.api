@@ -17,7 +17,7 @@ app.use(cors());
 //routes
 app.use("/users/auth", UserAuthRoutes);
 app.get("/", (req: express.Request, res: express.Response) => {
-  res.send("hello motherfucker...");
+  res.send("test route...");
 });
 
 const start = async (): Promise<void> => {

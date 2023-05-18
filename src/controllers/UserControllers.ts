@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import PasswordHash, { DecryptPassword } from "../helpers/PasswordHash";
 import { PrismaClient, Prisma, User } from "@prisma/client";
+import { CreateToken, VerifyToken } from "../helpers/CreateToken";
 const prisma = new PrismaClient();
 
 //check user
@@ -57,30 +58,18 @@ const checkUser = async (
   return undefined;
 };
 
-// interface User {
-//   first_name: string;
-//   last_name: string;
-//   phone: string;
-//   password: string;
-//   salt: string;
-//   avatar?: string;
-//   email?: string;
-//   address?: string;
-//   gender?: string;
-//   id: string;
-// }
 export const CreateUserAccount = async (req: Request, res: Response) => {
   try {
+    //await prisma.user.deleteMany();
     const { first_name, last_name, phone, password, email } = req.body as User;
+    console.log(first_name, last_name, phone, password, email);
+
     //check user
-    const userExists = await checkUser({ phone, email }) as CheckUserResult;
-    console.log(userExists.userPresent);
+    const userExists = (await checkUser({ phone, email })) as CheckUserResult;
     if (userExists.userPresent) {
       res.status(400).json({ message: "user already exists" });
       return;
     }
-
-    console.log("continuing.......");
 
     //hash password and get hashed pass and salt.
     const { passwordHashed, salt } = await PasswordHash(password);
@@ -96,12 +85,31 @@ export const CreateUserAccount = async (req: Request, res: Response) => {
         phone: phone,
       },
     });
-    console.log(user);
     //generate token using user details
+    const tokenObj = {
+      first_name: user.first_name,
+      last_name: user.last_name,
+      id: user.id,
+    } as User;
 
-    res.status(200).send(user);
+    const token = await CreateToken(tokenObj);
+    //update it in the database
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { ...user, sessionToken: token },
+    });
+    console.log(updatedUser);
+
+    //return clean user
+
+    const {
+      password: userPassword,
+      salt: userSalt,
+      ...cleanUser
+    } = updatedUser as User;
+    res.status(200).send(cleanUser);
   } catch (err: any) {
-    res.send(err.message);
+    res.status(400).send(err.message);
   }
 };
 export const LoginUser = async (req: Request, res: Response) => {
@@ -118,6 +126,7 @@ export const LoginUser = async (req: Request, res: Response) => {
       address: true,
       id: true,
       password: true,
+      sessionToken: true,
     }
   );
   console.log(checkUserResult);
@@ -128,27 +137,96 @@ export const LoginUser = async (req: Request, res: Response) => {
       res.status(404).json({ message: "User not found" });
       return;
     }
-    //console.log(user);
 
     if (phone !== user?.phone) {
       res.status(401).json({ message: "unauthorized" });
       return;
-    } else {
-      const passwordHashed = user.password;
-      const passwordMatch = await DecryptPassword({ password, passwordHashed });
+    }
+    //match passwords
+    const passwordHashed = user.password;
+    const passwordMatch = await DecryptPassword({ password, passwordHashed });
+    if (!passwordMatch) {
+      res.status(401).json({ message: "unauthorized" });
+      return;
+    }
+    //verify token- if none, create a new one and update it on the db.
+    if (user.sessionToken !== null) {
+      const isTokenValid = await VerifyToken(user.sessionToken);
+      console.log("is token valid", isTokenValid);
+      if (!isTokenValid) {
+        const tokenObj = {
+          first_name: user.first_name,
+          last_name: user.last_name,
+          id: user.id,
+        } as User;
 
-      if (!passwordMatch) {
-        res.status(401).json({ message: "unauthorized" });
+        const token = await CreateToken(tokenObj);
+        const updatedUser = await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            ...user,
+            sessionToken: token,
+          },
+        });
+        const { password, ...cleanUser } = updatedUser;
+        res.status(200).json({
+          message: "login successfull, new token assigned",
+          user: cleanUser,
+        });
       } else {
         const { password, ...cleanUser } = user;
-        res.status(200).json({ message: "cleared", user: cleanUser });
+        res.status(200).json({
+          message: "login successfull, using old token",
+          user: cleanUser,
+        });
       }
+    } else {
+      const tokenObj = {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        id: user.id,
+      } as User;
+      const token = await CreateToken(tokenObj);
+      const updatedUser = await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          ...user,
+          sessionToken: token,
+        },
+      });
+      const { password, ...cleanUser } = updatedUser;
+      res.status(200).json({
+        message: "login successfull, new token assigned",
+        user: cleanUser,
+      });
     }
+  } else {
+    res.status(401).json({ message: "user not found" });
   }
 };
 export const DeleteUserAccount = async (req: Request, res: Response) => {
   try {
-    res.send("delete account");
+    const { id } = req.body;
+    console.log(id);
+    const userExists = await checkUser({ id });
+    console.log(userExists);
+    if (userExists?.userPresent === false) {
+      res.status(404).json({ message: "user does not exist" });
+      return;
+    }
+    //verify session using by matching body id to the session id.
+    const user = userExists?.user;
+    await prisma.user.delete({
+      where: {
+        id: user!.id,
+      },
+    });
+    res.status(200).json({ message: "Delete successfull" });
+
   } catch (err) {}
 };
 export const UpdateUserDetails = async (req: Request, res: Response) => {
@@ -158,6 +236,8 @@ export const UpdateUserDetails = async (req: Request, res: Response) => {
 };
 export const GetProfile = async (req: Request, res: Response) => {
   const { id } = req.body;
+  console.log(id);
+
   try {
     const checkUserResult = await checkUser(
       { id: id },
@@ -175,5 +255,7 @@ export const GetProfile = async (req: Request, res: Response) => {
       const { user } = checkUserResult;
       res.status(200).json(user);
     }
-  } catch (err) {}
+  } catch (err) {
+    res.status(400).json({ message: "something went wrong" });
+  }
 };
