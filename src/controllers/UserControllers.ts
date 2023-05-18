@@ -73,11 +73,15 @@ export const CreateUserAccount = async (req: Request, res: Response) => {
   try {
     const { first_name, last_name, phone, password, email } = req.body as User;
     //check user
-    const userExists = await checkUser({ phone, email });
-    if (userExists) {
+    const userExists = await checkUser({ phone, email }) as CheckUserResult;
+    console.log(userExists.userPresent);
+    if (userExists.userPresent) {
       res.status(400).json({ message: "user already exists" });
       return;
     }
+
+    console.log("continuing.......");
+
     //hash password and get hashed pass and salt.
     const { passwordHashed, salt } = await PasswordHash(password);
     console.log(salt, passwordHashed);
@@ -120,8 +124,8 @@ export const LoginUser = async (req: Request, res: Response) => {
 
   if (checkUserResult) {
     const { user, userPresent } = checkUserResult;
-    if(!userPresent){
-      res.status(404).json({message: "User not found"});
+    if (!userPresent) {
+      res.status(404).json({ message: "User not found" });
       return;
     }
     //console.log(user);
@@ -140,7 +144,8 @@ export const LoginUser = async (req: Request, res: Response) => {
         res.status(200).json({ message: "cleared", user: cleanUser });
       }
     }
-}};
+  }
+};
 export const DeleteUserAccount = async (req: Request, res: Response) => {
   try {
     res.send("delete account");

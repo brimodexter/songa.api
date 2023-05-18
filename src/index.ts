@@ -23,6 +23,7 @@ app.get("/", (req: express.Request, res: express.Response) => {
 const start = async (): Promise<void> => {
   await app.listen(port, () => {
     console.log("starting server....");
+    console.log("Server started at", port);
   });
 };
 start();
