@@ -5,7 +5,7 @@ import cors from "cors";
 import { Express } from "express";
 
 const app: Express = express();
-const port: number = 3001;
+const port: number = 3000;
 
 app.use(bodyParser.json());
 app.use(

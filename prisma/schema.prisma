@@ -17,6 +17,7 @@ enum Gender{
 }
 
 model User{
+  
   first_name String
   last_name String
   phone String @unique
@@ -26,5 +27,7 @@ model User{
   email String? @unique
   address String?
   gender Gender? 
-  id String @id @default(uuid())
+  
+
+  @@map("users")
 }

@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import PasswordHash, { DecryptPassword } from "../helpers/PasswordHash";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, Prisma, User } from "@prisma/client";
 const prisma = new PrismaClient();
 
 //check user
 interface CheckUserProps {
   phone?: string;
-  email?: string | undefined;
+  email?: string | null;
   id?: string;
 }
 type CheckUserResult = {
@@ -57,18 +57,18 @@ const checkUser = async (
   return undefined;
 };
 
-interface User {
-  first_name: string;
-  last_name: string;
-  phone: string;
-  password: string;
-  salt: string;
-  avatar?: string;
-  email?: string;
-  address?: string;
-  gender?: string;
-  id: string;
-}
+// interface User {
+//   first_name: string;
+//   last_name: string;
+//   phone: string;
+//   password: string;
+//   salt: string;
+//   avatar?: string;
+//   email?: string;
+//   address?: string;
+//   gender?: string;
+//   id: string;
+// }
 export const CreateUserAccount = async (req: Request, res: Response) => {
   try {
     const { first_name, last_name, phone, password, email } = req.body as User;
