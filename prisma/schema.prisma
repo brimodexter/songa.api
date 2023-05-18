@@ -27,7 +27,7 @@ model User{
   email String? @unique
   address String?
   gender Gender? 
-  
+  id String @id @default(uuid())
 
   @@map("users")
 }
