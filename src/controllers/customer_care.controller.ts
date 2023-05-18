@@ -1,55 +1,54 @@
 import {PrismaClient} from '@prisma/client'
 import {Response} from "express";
+import {SafeParseSuccess, z} from "zod";
 import PasswordHash from "../helpers/PasswordHash";
+import {checkCustomeCareAgent, checkUser, CheckUserResult} from "../helpers/user";
 
 const prisma = new PrismaClient()
 
-interface CheckUserProps {
-    email: string;
-}
+const CustomerCareAgentSchema = z.object({
+        email: z.coerce.string().email().nonempty({message: 'Email is required',}),
+        first_name: z.string().trim().nonempty({message: 'First name is required',}),
+        last_name: z.string().trim().nonempty({message: 'Last name is required',}),
+        // This regex will enforce these rules:
+        // At least one digit, (?=.*?[0-9])
+        // At least one special character, (?=.*?[#?!@$%^&*-])
+        // Minimum eight in length .{8,} (with the anchors)
+        password: z.string().regex(/^(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, "Minimum eight characters, at least one number and one special character:").trim().nonempty({message: 'Password is required'})
+    })
+;
 
-const checkUser = async ({email}: CheckUserProps) => {
-    const user = await prisma.customerCareAgent.findUnique({
-        where: {
-            email: email,
-        },
-    });
-    if (user) {
-        return true;
-    }
-    return false;
-}
-
-interface CustomerCareAgentInterface {
-    id: number;
-    createdAt: Date;
-    email: string;
-    first_name: string;
-    last_name: string;
-    password: string;
-    salt: string;
-    is_active: Boolean
-}
 
 export const CustomerCareAgent = async (req: any, res: Response) => {
     try {
-        const {email, first_name, last_name, password} = req.body;
-        const userExists = await checkUser({email});
-        if (userExists) {
-            res.status(400).json({message: "user already exists"});
-            return;
+        let validationResponse = CustomerCareAgentSchema.safeParse(req.body);
+        if (!validationResponse.success) {
+            res.status(400).send(validationResponse.error.format());
         }
-        const {passwordHashed, salt} = await PasswordHash(password);
+
+        let {data} = validationResponse as SafeParseSuccess<any>;
+        let email = data.email
+        const userExists: CheckUserResult | undefined = await checkCustomeCareAgent({email});
+        if (userExists && userExists.userPresent) {
+            res.status(400).json({message: "user already exists"});
+        }
+        const {passwordHashed, salt} = await PasswordHash(data.password);
+        data.password = passwordHashed;
+        data.salt = salt;
         const agent = await prisma.customerCareAgent.create({
-            data: {
-                email: email,
-                first_name: first_name,
-                last_name: last_name,
-                password: passwordHashed,
-                salt: salt,
-            },
+            data: {...data },
+            select: {
+                first_name:true,
+                last_name: true,
+                email: true,
+                created_at: true,
+                is_active: true,
+                id:true
+            }
+        });
+        res.json({
+            agent
         })
-        res.json(agent)
     } catch (err: any) {
         res.send(err.message);
     }

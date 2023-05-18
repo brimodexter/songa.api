@@ -10,18 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model CustomerCareAgent {
-  id         Int      @id @default(autoincrement())
-  createdAt  DateTime @default(now())
-  email      String   @unique
-  first_name String?
-  last_name  String?
-  password   String
-  salt       String
-  is_active  Boolean  @default(false)
-
-  @@map("customer_care_agent")
-}
 enum Gender{
   M 
   F 
@@ -29,7 +17,6 @@ enum Gender{
 }
 
 model User{
-  
   first_name String
   last_name String
   phone String @unique
@@ -42,4 +29,18 @@ model User{
   id String @id @default(uuid())
 
   @@map("users")
+}
+
+model CustomerCareAgent {
+  first_name String
+  last_name  String
+  email      String   @unique
+  password   String
+  salt       String
+  created_at  DateTime @default(now())
+  updated_at DateTime?
+  is_active  Boolean  @default(false)
+  id         String      @id @default(uuid())
+
+  @@map("customer_care_agent")
 }
