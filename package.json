@@ -2,15 +2,15 @@
   "name": "songa.api",
   "version": "0.0.1",
   "description": "This is the backend application that will help run the backend of the Songa application",
-  "main": "./src/app.ts",
+  "main": "./src/index.ts",
   "scripts": {
     "test": "test",
-    "dev": "nodemon ./src/app.ts"
+    "dev": "nodemon ./src/index.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^4.14.1",
+    "@prisma/client": "^4.14.0",
     "@types/axios": "^0.14.0",
     "@types/bcrypt": "^5.0.0",
     "@types/bcryptjs": "^2.4.2",
@@ -23,6 +23,7 @@
     "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
+    "cloudinary": "^1.37.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "nanoid": "^4.0.2",
@@ -32,7 +33,8 @@
     "concurrently": "^8.0.1",
     "eslint": "^8.40.0",
     "nodemon": "^2.0.22",
-    "prisma": "^4.14.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "prisma": "^4.14.1",
+    "typescript": "^5.0.4"
   }
 }

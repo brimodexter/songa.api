@@ -11,13 +11,35 @@ datasource db {
 }
 
 model CustomerCareAgent {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  email     String   @unique
-  first_name   String?
-  last_name      String?
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  email      String   @unique
+  first_name String?
+  last_name  String?
+  password   String
+  salt       String
+  is_active  Boolean  @default(false)
+
+  @@map("customer_care_agent")
+}
+enum Gender{
+  M 
+  F 
+  Other
+}
+
+model User{
+  
+  first_name String
+  last_name String
+  phone String @unique
   password String
   salt String
-  is_active      Boolean     @default(false)
-  @@map("customer care agents")
+  avatar String?
+  email String? @unique
+  address String?
+  gender Gender? 
+  id String @id @default(uuid())
+
+  @@map("users")
 }
