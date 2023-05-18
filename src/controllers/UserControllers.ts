@@ -2,61 +2,15 @@ import { Request, Response } from "express";
 import PasswordHash, { DecryptPassword } from "../helpers/PasswordHash";
 import { PrismaClient, Prisma, User } from "@prisma/client";
 import { CreateToken, VerifyToken } from "../helpers/CreateToken";
+import { checkUser } from "../helpers/user";
+import { CheckUserResult } from "../helpers/user";
+
 const prisma = new PrismaClient();
 
 //check user
-interface CheckUserProps {
-  phone?: string;
-  email?: string | null;
-  id?: string;
-}
-type CheckUserResult = {
-  userPresent: boolean;
-  user: User | null;
-};
+
 //this function takes in a unique identifier and a selector of all the fields you want from the user object
-const checkUser = async (
-  { phone, email, id }: CheckUserProps,
-  select?: Prisma.UserSelect
-): Promise<CheckUserResult | undefined> => {
-  if (id) {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: id,
-      },
-      select: select,
-    });
-    if (user) {
-      return { userPresent: true, user: user } as CheckUserResult;
-    }
-    return { userPresent: false, user: null } as CheckUserResult;
-  }
-  if (phone) {
-    const user = await prisma.user.findUnique({
-      where: {
-        phone: phone,
-      },
-      select: select,
-    });
-    if (user) {
-      return { userPresent: true, user: user } as CheckUserResult;
-    }
-    return { userPresent: false, user: null } as CheckUserResult;
-  }
-  if (email) {
-    const user = await prisma.user.findUnique({
-      where: {
-        email: email,
-      },
-      select: select,
-    });
-    if (user) {
-      return { userPresent: true, user: user } as CheckUserResult;
-    }
-    return { userPresent: false, user: null } as CheckUserResult;
-  }
-  return undefined;
-};
+
 
 export const CreateUserAccount = async (req: Request, res: Response) => {
   try {
@@ -65,8 +19,13 @@ export const CreateUserAccount = async (req: Request, res: Response) => {
     console.log(first_name, last_name, phone, password, email);
 
     //check user
+<<<<<<< HEAD
     const userExists = (await checkUser({ phone, email })) as CheckUserResult;
     if (userExists.userPresent) {
+=======
+    const userExists = await checkUser({ phone, email }) as CheckUserResult;
+    if (userExists && userExists.userPresent) {
+>>>>>>> main
       res.status(400).json({ message: "user already exists" });
       return;
     }
