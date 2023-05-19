@@ -6,7 +6,7 @@ jobs:
 #    executor: node/default # use the default executor defined within the orb
     # Service container image
     docker:
-      - image: circleci/node:12.10
+      - image: cimg/node:18.16.0
         environment:
           DATABASE_URL: postgresql://postgres@localhost/circle_test
         auth:
