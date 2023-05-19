@@ -16,10 +16,10 @@ app.use(
 );
 app.use(cors());
 //routes
-app.use("/users/auth", UserAuthRoutes);
-app.use("/riders/auth", RiderAuthRoutes);
-app.use("/users/customer_agent", CustomerCareAgentRoutes);
-app.get("/", (req: express.Request, res: express.Response) => {
+app.use("/api/users/auth", UserAuthRoutes);
+app.use("/api/riders/auth", RiderAuthRoutes);
+app.use("/api/users/customer_agent", CustomerCareAgentRoutes);
+app.get("/api", (req: express.Request, res: express.Response) => {
     res.send("test route...");
 });
 
