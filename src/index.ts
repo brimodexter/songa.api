@@ -1,32 +1,5 @@
-import express, { Express } from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import UserAuthRoutes from "./routes/userAuthRoutes";
-import RiderAuthRoutes from "./routes/RiderAuthRoutes";
-import CustomerCareAgentRoutes from "./routes/customerCareAgentRoutes";
+import app from "./app";
 
-const app: Express = express();
-const port: number = 3000;
+const PORT: Number = 3000;
 
-app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-app.use(cors());
-//routes
-app.use("/users/auth", UserAuthRoutes);
-app.use("/riders/auth", RiderAuthRoutes);
-app.use("/users/customer_agent", CustomerCareAgentRoutes);
-app.get("/", (req: express.Request, res: express.Response) => {
-  res.send("test route...");
-});
-
-const start = async (): Promise<void> => {
-  await app.listen(port, () => {
-    console.log("starting server....");
-    console.log("Server started at", port);
-  });
-};
-start();
+app.listen(PORT, (): void => console.log(`running on port ${PORT}`));

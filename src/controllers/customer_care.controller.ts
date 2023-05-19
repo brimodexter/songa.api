@@ -2,7 +2,7 @@ import {PrismaClient} from '@prisma/client'
 import {Response} from "express";
 import {SafeParseSuccess, z} from "zod";
 import PasswordHash from "../helpers/PasswordHash";
-import {checkCustomeCareAgent, checkUser, CheckUserResult} from "../helpers/user";
+import {checkCustomerCareAgent, checkUser, CheckUserResult} from "../helpers/user";
 
 const prisma = new PrismaClient()
 
@@ -24,32 +24,33 @@ export const CustomerCareAgent = async (req: any, res: Response) => {
         let validationResponse = CustomerCareAgentSchema.safeParse(req.body);
         if (!validationResponse.success) {
             res.status(400).send(validationResponse.error.format());
+            return;
         }
 
         let {data} = validationResponse as SafeParseSuccess<any>;
         let email = data.email
-        const userExists: CheckUserResult | undefined = await checkCustomeCareAgent({email});
+        const userExists: CheckUserResult | undefined = await checkCustomerCareAgent({email});
         if (userExists && userExists.userPresent) {
-            res.status(400).json({message: "user already exists"});
+            res.status(400).json({email: "user already exists"});
+            return;
         }
         const {passwordHashed, salt} = await PasswordHash(data.password);
         data.password = passwordHashed;
         data.salt = salt;
         const agent = await prisma.customerCareAgent.create({
-            data: {...data },
+            data: {...data},
             select: {
-                first_name:true,
+                first_name: true,
                 last_name: true,
                 email: true,
                 created_at: true,
                 is_active: true,
-                id:true
+                id: true
             }
         });
-        res.json({
-            agent
-        })
+        res.json(agent)
     } catch (err: any) {
-        res.send(err.message);
+        console.log('Internal Server Error:', err.message)
+        res.status(500).send({"error": "Internal Server Error"});
     }
 }

@@ -1,26 +1,50 @@
 # Use the latest 2.1 version of CircleCI pipeline process engine.
 # See: https://circleci.com/docs/configuration-reference
 version: 2.1
-
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/configuration-reference/#executor-job
+  build_and_test: # this can be any name you choose
     docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/configuration-reference/#steps
+      - image: cimg/node:18.16.0
+        environment:
+          DATABASE_URL: postgresql://postgres@localhost/circle_test
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+
+      - image: cimg/postgres:14.0
+        environment:
+          POSTGRES_USER: postgres
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+
+    working_directory: ~/IV
     steps:
       - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+      - setup_remote_docker
 
-# Orchestrate jobs using workflows
-# See: https://circleci.com/docs/configuration-reference/#workflows
+      - run:
+          name: Install package json dependencies
+          command: npm install
+
+      - run:
+          name: Build nodejs app
+          command: npm run build
+
+      - run:
+          name: Check prisma schema is valid nd push to db
+          command: npm run migrate
+
+      - run:
+          command: npm run test
+          name: Run tests
+
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+
 workflows:
-  say-hello-workflow:
+  build_test_deploy:
     jobs:
-      - say-hello
+      - build_and_test
