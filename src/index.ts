@@ -1,9 +1,9 @@
-import express, {Express} from "express";
+import express, { Express } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import UserAuthRoutes from "./routes/userAuthRoutes";
+import RiderAuthRoutes from "./routes/RiderAuthRoutes";
 import CustomerCareAgentRoutes from "./routes/customerCareAgentRoutes";
-
 
 const app: Express = express();
 const port: number = 3000;
@@ -17,9 +17,10 @@ app.use(
 app.use(cors());
 //routes
 app.use("/users/auth", UserAuthRoutes);
+app.use("/riders/auth", RiderAuthRoutes);
 app.use("/users/customer_agent", CustomerCareAgentRoutes);
 app.get("/", (req: express.Request, res: express.Response) => {
-  res.send("hello motherfucker...");
+  res.send("test route...");
 });
 
 const start = async (): Promise<void> => {
