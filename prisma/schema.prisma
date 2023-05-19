@@ -26,10 +26,29 @@ model User{
   email String? @unique
   address String?
   gender Gender? 
+  dateCreated DateTime
+  updatedAt DateTime?
   sessionToken String?
   id String @id @default(uuid())
 
   @@map("users")
+}
+model Rider{
+  first_name String
+  last_name String
+  phone String @unique
+  password String
+  salt String
+  avatar String?
+  email String? @unique
+  address String?
+  gender Gender? 
+  sessionToken String?
+  dateCreated DateTime
+  updatedAt DateTime?
+  id String @id @default(uuid())
+
+  @@map("riders")
 }
 
 model CustomerCareAgent {

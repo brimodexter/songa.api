@@ -24,8 +24,6 @@ export const VerifyToken = async (token: string): Promise<boolean> => {
   try {
     const isValid = await jwt.verify(token, secretKey);
     console.log(isValid);
-
-    console.log(`token is ${isValid}`);
     if (isValid) {
       return true;
     } else {
