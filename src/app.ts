@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import UserAuthRoutes from "./routes/userAuthRoutes";
 import CustomerCareAgentRoutes from "./routes/customerCareAgentRoutes";
+import RiderAuthRoutes from "./routes/RiderAuthRoutes";
 
 
 const app: Express = express();
@@ -16,9 +17,10 @@ app.use(
 app.use(cors());
 //routes
 app.use("/users/auth", UserAuthRoutes);
+app.use("/riders/auth", RiderAuthRoutes);
 app.use("/users/customer_agent", CustomerCareAgentRoutes);
 app.get("/", (req: express.Request, res: express.Response) => {
-    res.send("hello motherfucker...");
+    res.send("test route...");
 });
 
 export default app;

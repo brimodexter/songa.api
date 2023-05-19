@@ -1,4 +1,4 @@
-import {Prisma, PrismaClient, User} from "@prisma/client";
+import {Prisma, PrismaClient, Rider, User} from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -12,43 +12,47 @@ export type CheckUserResult = {
     userPresent: boolean;
     user: User | null;
 };
+export type CheckRiderResult = {
+    riderPresent: boolean;
+    rider: Rider | null;
+};
 
 export const checkUser = async (
     {phone, email, id}: CheckUserProps,
     select?: Prisma.UserSelect
 ): Promise<CheckUserResult | undefined> => {
-    console.log(phone, email, id)
+    console.log(phone, email, id);
     if (id) {
-        const user = await prisma.user.findUnique({
+        const user = (await prisma.user.findUnique({
             where: {
                 id: id,
             },
             select: select,
-        });
+        })) as User;
         if (user) {
             return {userPresent: true, user: user} as CheckUserResult;
         }
         return {userPresent: false, user: null} as CheckUserResult;
     }
     if (phone) {
-        const user = await prisma.user.findUnique({
+        const user = (await prisma.user.findUnique({
             where: {
                 phone: phone,
             },
             select: select,
-        });
+        })) as User;
         if (user) {
             return {userPresent: true, user: user} as CheckUserResult;
         }
         return {userPresent: false, user: null} as CheckUserResult;
     }
     if (email) {
-        const user = await prisma.user.findUnique({
+        const user = (await prisma.user.findUnique({
             where: {
                 email: email,
             },
             select: select,
-        });
+        })) as User;
         if (user) {
             return {userPresent: true, user: user} as CheckUserResult;
         }
@@ -56,6 +60,50 @@ export const checkUser = async (
     }
     return undefined;
 };
+export const checkRider = async (
+    {phone, email, id}: CheckUserProps,
+    select?: Prisma.UserSelect
+): Promise<CheckRiderResult | undefined> => {
+    console.log(phone, email, id);
+    if (id) {
+        const rider = (await prisma.rider.findUnique({
+            where: {
+                id: id,
+            },
+            select: select,
+        })) as Rider;
+        if (rider) {
+            return {riderPresent: true, rider: rider} as CheckRiderResult;
+        }
+        return {riderPresent: false, rider: null} as CheckRiderResult;
+    }
+    if (phone) {
+        const rider = (await prisma.rider.findUnique({
+            where: {
+                phone: phone,
+            },
+            select: select,
+        })) as Rider;
+        if (rider) {
+            return {riderPresent: true, rider: rider} as CheckRiderResult;
+        }
+        return {riderPresent: false, rider: null} as CheckRiderResult;
+    }
+    if (email) {
+        const rider = (await prisma.rider.findUnique({
+            where: {
+                email: email,
+            },
+            select: select,
+        })) as Rider;
+        if (rider) {
+            return {riderPresent: true, rider: rider} as CheckRiderResult;
+        }
+        return {riderPresent: false, rider: null} as CheckRiderResult;
+    }
+    return undefined;
+};
+
 
 export const checkCustomerCareAgent = async (
     {phone, email, id}: CheckUserProps,
