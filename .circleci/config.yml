@@ -23,8 +23,11 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - node/install-packages:
-          pkg-manager: npm
+#      - node/install-packages:
+#          pkg-manager: npm
+      - run:
+          name: Install package json dependencies
+          command: npm install .
       - run:
           command: npm run test
           name: Run tests
