@@ -31,7 +31,7 @@ jobs:
 
       - run:
           name: Check prisma schema is valid nd push to db
-          command: prisma validate && prisma db push
+          command: npx prisma validate && npx prisma db push
 
       - run:
           command: npm run test
