@@ -27,7 +27,7 @@ jobs:
 #          pkg-manager: npm
       - run:
           name: Install package json dependencies
-          command: npm install .
+          command: npm install
 
       - run:
           name: Check prisma schema is valid nd push to db
