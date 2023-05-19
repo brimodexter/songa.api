@@ -1,5 +1,5 @@
 import request from 'supertest'
-import app from '../app'
+import app from '../src/app'
 import {PrismaClient} from "@prisma/client";
 
 const AUTH_ROUTE = '/users/customer_agent/create-user-account'
