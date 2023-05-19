@@ -13,7 +13,10 @@ export const CreateRiderAccount = async (req: Request, res: Response) => {
 
     //check rider
 
-    const riderExists = (await checkRider({ phone, email })) as CheckRiderResult;
+    const riderExists = (await checkRider({
+      phone,
+      email,
+    })) as CheckRiderResult;
     if (riderExists.riderPresent) {
       res.status(400).json({ message: "rider already exists" });
       return;
@@ -21,7 +24,6 @@ export const CreateRiderAccount = async (req: Request, res: Response) => {
 
     //hash password and get hashed pass and salt.
     const { passwordHashed, salt } = await PasswordHash(password);
-    console.log(salt, passwordHashed);
 
     //add to db
     const rider = await prisma.rider.create({
@@ -41,12 +43,12 @@ export const CreateRiderAccount = async (req: Request, res: Response) => {
       id: rider.id,
     } as Rider;
 
-    const token = await CreateToken(tokenObj);
+    const token: string = await CreateToken(tokenObj);
     //update it in the database
-    const updatedRider = await prisma.rider.update({
+    const updatedRider = (await prisma.rider.update({
       where: { id: rider.id },
       data: { ...rider, sessionToken: token },
-    });
+    })) as Rider;
     console.log(updatedRider);
 
     //return clean rider
@@ -79,10 +81,9 @@ export const LoginRider = async (req: Request, res: Response) => {
         sessionToken: true,
       }
     );
-    console.log(checkRiderResult);
 
     if (checkRiderResult) {
-      const { rider, riderPresent } = checkRiderResult;
+      const { rider, riderPresent } = checkRiderResult as CheckRiderResult;
       if (!riderPresent) {
         res.status(404).json({ message: "rider not found" });
         return;
@@ -93,8 +94,11 @@ export const LoginRider = async (req: Request, res: Response) => {
         return;
       }
       //match passwords
-      const passwordHashed = rider.password;
-      const passwordMatch = await DecryptPassword({ password, passwordHashed });
+      const passwordHashed: string = rider.password;
+      const passwordMatch: boolean = await DecryptPassword({
+        password,
+        passwordHashed,
+      });
       if (!passwordMatch) {
         res.status(401).json({ message: "unauthorized" });
         return;
@@ -110,8 +114,8 @@ export const LoginRider = async (req: Request, res: Response) => {
             id: rider.id,
           } as Rider;
 
-          const token = await CreateToken(tokenObj);
-          const updatedRider = await prisma.rider.update({
+          const token: string = await CreateToken(tokenObj);
+          const updatedRider = (await prisma.rider.update({
             where: {
               id: rider.id,
             },
@@ -119,14 +123,14 @@ export const LoginRider = async (req: Request, res: Response) => {
               ...rider,
               sessionToken: token,
             },
-          });
-          const { password, ...cleanRider } = updatedRider;
+          })) as Rider;
+          const { password, ...cleanRider } = updatedRider as Rider;
           res.status(200).json({
             message: "Rider login successfull, new token assigned",
             rider: cleanRider,
           });
         } else {
-          const { password, ...cleanRider } = rider;
+          const { password, ...cleanRider } = rider as Rider;
           res.status(200).json({
             message: "Rider login successfull, using old token",
             rider: cleanRider,
@@ -138,8 +142,8 @@ export const LoginRider = async (req: Request, res: Response) => {
           last_name: rider.last_name,
           id: rider.id,
         } as Rider;
-        const token = await CreateToken(tokenObj);
-        const updatedRider = await prisma.rider.update({
+        const token: string = await CreateToken(tokenObj);
+        const updatedRider = (await prisma.rider.update({
           where: {
             id: rider.id,
           },
@@ -147,8 +151,8 @@ export const LoginRider = async (req: Request, res: Response) => {
             ...rider,
             sessionToken: token,
           },
-        });
-        const { password, ...cleanRider } = updatedRider;
+        })) as Rider;
+        const { password, ...cleanRider } = updatedRider as Rider;
         res.status(200).json({
           message: "Rider login successfull, new token assigned",
           rider: cleanRider,
@@ -162,13 +166,57 @@ export const LoginRider = async (req: Request, res: Response) => {
   }
 };
 export const DeleteRiderAccount = async (req: Request, res: Response) => {
-  res.send("delete-rider-accont");
+  try {
+    const { id }: { id: string } = req.body;
+    console.log("to be deleted", id);
+
+    const riderExists = (await checkRider({ id })) as CheckRiderResult;
+    console.log(riderExists);
+
+    if (riderExists?.riderPresent === false) {
+      res.status(404).json({ message: "user does not exist" });
+      return;
+    }
+    //verify session using by matching body id to the session id.
+    const rider: Rider | null = riderExists?.rider;
+    await prisma.rider.delete({
+      where: {
+        id: rider!.id,
+      },
+    });
+    res.status(200).json({ message: "Delete successfull" });
+  } catch (err) {
+    res.status(400).json({ message: "something went wrong" });
+  }
 };
 export const UpdateRiderAccount = async (req: Request, res: Response) => {
   res.send("update-rider-accont");
 };
 export const GetRiderProfile = async (req: Request, res: Response) => {
-  const { id } = req.body;
-  console.log("rider, ", id);
-  res.send("get rider details");
+  const { id }: { id: string } = req.body;
+  console.log(id, "identifier");
+
+  try {
+    const checkRiderResult = await checkRider(
+      { id: id },
+      {
+        first_name: true,
+        last_name: true,
+        avatar: true,
+        address: true,
+        email: true,
+        gender: true,
+        phone: true,
+      }
+    );
+
+    if (checkRiderResult) {
+      const { rider }: { rider: Rider | null } = checkRiderResult;
+      res.status(200).json(rider);
+    } else {
+      res.status(400).json({ message: "rider not found" });
+    }
+  } catch (err) {
+    res.status(400).json({ message: "something went wrong" });
+  }
 };
