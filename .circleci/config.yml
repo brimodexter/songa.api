@@ -3,8 +3,6 @@
 version: 2.1
 jobs:
   build_and_test: # this can be any name you choose
-#    executor: node/default # use the default executor defined within the orb
-    # Service container image
     docker:
       - image: cimg/node:18.16.0
         environment:
@@ -19,33 +17,33 @@ jobs:
         auth:
           username: mydockerhub-user
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+
     working_directory: ~/IV
     steps:
       - checkout
       - setup_remote_docker
-#      - node/install-packages:
-#          pkg-manager: npm
+
       - run:
           name: Install package json dependencies
           command: npm install
 
       - run:
+          name: Build nodejs app
+          command: npm build
+
+      - run:
           name: Check prisma schema is valid nd push to db
-          command: npx prisma validate && npx prisma db push
+          command: npm run migrate
 
       - run:
           command: npm run test
           name: Run tests
-#      - run:
-#          command: yarn build
-#          name: Build app
+
       - persist_to_workspace:
           root: ~/project
           paths:
             - .
 
-# Orchestrate jobs using workflows
-# See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
   build_test_deploy:
     jobs:
