@@ -2,7 +2,7 @@ import request from 'supertest'
 import app from '../src/app'
 import {PrismaClient} from "@prisma/client";
 
-const AUTH_ROUTE = '/users/customer_agent/create-user-account'
+const AUTH_ROUTE = '/api/users/customer_agent/create-user-account'
 
 beforeEach(async () => {
     const prisma = new PrismaClient()
