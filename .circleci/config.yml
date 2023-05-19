@@ -28,6 +28,11 @@ jobs:
       - run:
           name: Install package json dependencies
           command: npm install .
+
+      - run:
+          name: Check prisma schema is valid nd push to db
+          command: prisma validate && prisma db push
+
       - run:
           command: npm run test
           name: Run tests
