@@ -135,7 +135,6 @@ export const LoginCCA = async (req: Request, res: Response) => {
                             sessionToken:true
                         }
                     }));
-                    // const {password, ...cleanUser} = updatedUser;
                     res.status(200).json({
                         message: "login successfully, new token assigned",
                         user: updatedUser,
@@ -154,6 +153,8 @@ export const LoginCCA = async (req: Request, res: Response) => {
 export const UpdateCCA = async (req: Request, res: Response) => {
     const {id} = req.params;
     try {
+        //todo ensure authorisation and permission are working
+        //todo Update timestamp on update
         let validationResponse = CustomerCareAgentUpdateSchema.safeParse(req.body);
         if (!validationResponse.success) {
             res.status(400).send(validationResponse.error.format());
@@ -184,10 +185,12 @@ export const UpdateCCA = async (req: Request, res: Response) => {
             if (err.code === 'P2025') {
                 console.log(err)
                 res.status(404).json({message: "user not found"});
+                return;
             }
         }
         console.log(err)
         res.status(500).json({message: "something went wrong"});
+        return;
     }
 };
 
@@ -211,11 +214,14 @@ export const GetProfileCCA = async (req: Request, res: Response) => {
         if (checkUserResult) {
             const {user}: { user: any | null } = checkUserResult;
             res.status(200).json(user);
+            return;
         } else {
             res.status(404).json({message: "user not found"});
+            return
         }
     } catch (err) {
         console.log(err)
         res.status(500).json({message: "something went wrong"});
+        return;
     }
 };
