@@ -10,6 +10,7 @@ id = 24b1fac3-4764-47ad-8983-91218df65b7b
 [config.relations.collections]
 rootDirectory = postman/collections
 files[] = {"id":"27280215-2f1f30fb-a6b3-45d2-9f73-8134296e6b54","path":"Auth.json","metaData":{}}
+files[] = {"id":"27280215-3583a3c3-c25f-4d0e-8cc5-febcb873422d","path":"OTP.json","metaData":{}}
 
 [config.relations.collections.metaData]
 

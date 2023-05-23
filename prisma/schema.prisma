@@ -63,6 +63,7 @@ model CustomerCareAgent {
   is_active  Boolean                 @default(false)
   verified   Boolean                 @default(false)
   token      CustomerCareAgentToken?
+  sessionToken String?
   id         String                  @id @default(uuid())
 
   @@map("customer_care_agent")

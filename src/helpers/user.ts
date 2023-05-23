@@ -17,6 +17,10 @@ export type CheckRiderResult = {
     rider: Rider | null;
 };
 
+export type CheckCCA = {
+    userPresent: boolean;
+    user: CustomerCareAgent | null;
+};
 export const checkUser = async (
     {phone, email, id}: CheckUserProps,
     select?: Prisma.UserSelect
@@ -106,8 +110,8 @@ export const checkRider = async (
 
 
 export const checkCustomerCareAgent = async (
-    {email, id}: CheckUserProps,
-    select?: Prisma.UserSelect
+    { email, id}: CheckUserProps,
+    select?: Prisma.CustomerCareAgentSelect
 ): Promise<CheckCCA | undefined> => {
     if (id) {
         const user = await prisma.customerCareAgent.findUnique({
@@ -134,9 +138,4 @@ export const checkCustomerCareAgent = async (
         return {userPresent: false, user: null} as CheckCCA;
     }
     return undefined;
-};
-
-export type CheckCCA = {
-    userPresent: boolean;
-    user: CustomerCareAgent | null;
 };
