@@ -60,6 +60,7 @@ model CustomerCareAgent {
   created_at  DateTime @default(now())
   updated_at DateTime?
   is_active  Boolean  @default(false)
+  sessionToken String?
   id         String      @id @default(uuid())
 
   @@map("customer_care_agent")
