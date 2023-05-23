@@ -1,8 +1,11 @@
 import {PrismaClient} from '@prisma/client'
-import {Response} from "express";
+import {Response, Request} from "express";
 import {SafeParseSuccess, z} from "zod";
+
 import PasswordHash from "../helpers/PasswordHash";
-import {checkCustomerCareAgent, checkUser, CheckUserResult} from "../helpers/user";
+import {CheckCCA, checkCustomerCareAgent, CheckUserResult} from "../helpers/user";
+import {verifyCCA} from "../helpers/SendMail";
+import logger from "../helpers/logging";
 
 const prisma = new PrismaClient()
 
@@ -29,7 +32,7 @@ export const CustomerCareAgent = async (req: any, res: Response) => {
 
         let {data} = validationResponse as SafeParseSuccess<any>;
         let email = data.email
-        const userExists: CheckUserResult | undefined = await checkCustomerCareAgent({email});
+        const userExists: CheckCCA | undefined = await checkCustomerCareAgent({email});
         if (userExists && userExists.userPresent) {
             res.status(400).json({email: "user already exists"});
             return;
@@ -48,9 +51,42 @@ export const CustomerCareAgent = async (req: any, res: Response) => {
                 id: true
             }
         });
+        await verifyCCA(agent)
         res.json(agent)
     } catch (err: any) {
-        console.log('Internal Server Error:', err.message)
+        logger.error("Error signing up new CCA: ", err)
         res.status(500).send({"error": "Internal Server Error"});
     }
 }
+
+export const CCAVerification = async (req: Request, res: Response) => {
+    try {
+        const {id, token} = req.params;
+        // const token =req.query.token
+        const userExists: CheckCCA | undefined = await checkCustomerCareAgent({id},);
+        if (userExists && userExists.user) {
+            const tokenObject = await prisma.customerCareAgentToken.findFirst({
+                where: {
+                    userId: id,
+                    token: token
+                }
+            });
+            if (!tokenObject) return res.status(400).send("Invalid link");
+            const updatedPost = await prisma.customerCareAgent.update({
+                where: {id: req.params.id},
+                data: {verified: true},
+            });
+            const deleteToken = await prisma.customerCareAgentToken.delete({
+                where: {
+                    userId: id
+                }
+            })
+        } else {
+            if (!userExists) return res.status(400).send("Invalid link");
+        }
+        res.send("email verified successfully");
+    } catch (error) {
+        logger.error("Error email in verifying new CCA: ", error)
+        res.status(400).send({"error": "Internal Server Error"});
+    }
+};

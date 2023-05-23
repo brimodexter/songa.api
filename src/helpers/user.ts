@@ -1,4 +1,4 @@
-import {Prisma, PrismaClient, Rider, User} from "@prisma/client";
+import {CustomerCareAgent, Prisma, PrismaClient, Rider, User} from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -106,9 +106,9 @@ export const checkRider = async (
 
 
 export const checkCustomerCareAgent = async (
-    {phone, email, id}: CheckUserProps,
+    {email, id}: CheckUserProps,
     select?: Prisma.UserSelect
-): Promise<CheckUserResult | undefined> => {
+): Promise<CheckCCA | undefined> => {
     if (id) {
         const user = await prisma.customerCareAgent.findUnique({
             where: {
@@ -117,9 +117,9 @@ export const checkCustomerCareAgent = async (
             select: select,
         });
         if (user) {
-            return {userPresent: true, user: user} as CheckUserResult;
+            return {userPresent: true, user: user} as CheckCCA;
         }
-        return {userPresent: false, user: null} as CheckUserResult;
+        return {userPresent: false, user: null} as CheckCCA;
     }
     if (email) {
         const user = await prisma.customerCareAgent.findUnique({
@@ -129,9 +129,14 @@ export const checkCustomerCareAgent = async (
             select: select,
         });
         if (user) {
-            return {userPresent: true, user: user} as CheckUserResult;
+            return {userPresent: true, user: user} as CheckCCA;
         }
-        return {userPresent: false, user: null} as CheckUserResult;
+        return {userPresent: false, user: null} as CheckCCA;
     }
     return undefined;
+};
+
+export type CheckCCA = {
+    userPresent: boolean;
+    user: CustomerCareAgent | null;
 };

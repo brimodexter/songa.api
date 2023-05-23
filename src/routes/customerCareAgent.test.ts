@@ -8,6 +8,10 @@ beforeEach(async () => {
     const prisma = new PrismaClient()
     await prisma.customerCareAgent.deleteMany({}) //delete posts first
 })
+
+
+const mockCallback = jest.fn( mailOptions=> 42);
+
 describe('#1 Test customer care authentications', () => {
     test('show error when no data is provided', async () => {
         const res = await request(app).post(AUTH_ROUTE).send({})
