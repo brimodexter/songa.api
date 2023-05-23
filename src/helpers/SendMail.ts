@@ -1,13 +1,13 @@
 import * as crypto from "crypto";
-import {CustomerCareAgent, PrismaClient} from "@prisma/client";
+import {PrismaClient} from "@prisma/client";
 const nodemailer = require('nodemailer');
 import smtpTransport from "nodemailer-smtp-transport";
 import handlebars from "handlebars";
 import config from "./config";
 import logger from "./logging";
 
-const {promisify} = require('util');
-const fs = require('fs');
+import  {promisify} from 'util';
+import fs from 'fs';
 
 const readFile = promisify(fs.readFile);
 

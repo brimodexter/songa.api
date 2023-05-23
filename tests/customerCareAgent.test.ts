@@ -7,8 +7,21 @@ const LOGIN_URL = '/api/users/customer_agent/login'
 const UPDATE_URL = '/api/users/customer_agent/create-user-account/'
 
 const prisma = new PrismaClient()
+
+const sendMailMock = jest.fn(); // this will return undefined if .sendMail() is called
+
+// In order to return a specific value you can use this instead
+// const sendMailMock = jest.fn().mockReturnValue(/* Whatever you would expect as return value */);
+
+jest.mock("nodemailer");
+
+const nodemailer = require("nodemailer"); //doesn't work with import. idk why
+nodemailer.createTransport.mockReturnValue({"sendMail": sendMailMock});
+
 beforeEach(async () => {
-    await prisma.customerCareAgent.deleteMany({})
+    await prisma.customerCareAgent.deleteMany({});
+    sendMailMock.mockClear();
+    nodemailer.createTransport.mockClear();
 })
 describe('#1 Test customer care authentications', () => {
     test('show error when no signup information is provided', async () => {
@@ -46,11 +59,12 @@ describe('#1 Test customer care authentications', () => {
         }
         const res = await request(app).post(SIGNUP_URL).send(data)
         expect(res.body.email).toBe('dennisngeno@gmail.com')
-        expect(res.body.first_name).toBe('Dennis')
-        expect(res.body.last_name).toBe('Ngeno')
-        expect(res.body.is_active).toBe(false)
-        expect(res.body.created_at).toBeDefined()
-        expect(res.body.id).toBeDefined()
+        expect(res.body.first_name).toBe('Dennis');
+        expect(res.body.last_name).toBe('Ngeno');
+        expect(res.body.is_active).toBe(false);
+        expect(res.body.created_at).toBeDefined();
+        expect(res.body.id).toBeDefined();
+        expect(sendMailMock).toHaveBeenCalled();
 
     })
     test('Error when same email is used twice', async () => {
