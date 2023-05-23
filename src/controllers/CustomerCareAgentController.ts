@@ -148,7 +148,7 @@ export const LoginCCA = async (req: Request, res: Response) => {
                 return;
             }
         } catch (err) {
-            console.log('Internal Server Error:', err)
+            logger.error("Error while logging in a new CCA: ", err)
             res.status(500).send({"error": "Internal Server Error"});
         }
     }
@@ -191,7 +191,7 @@ export const UpdateCCA = async (req: Request, res: Response) => {
                 return;
             }
         }
-        console.log(err)
+        logger.error("Error updating CCA: ", err)
         res.status(500).json({message: "something went wrong"});
         return;
     }
@@ -223,7 +223,7 @@ export const GetProfileCCA = async (req: Request, res: Response) => {
             return
         }
     } catch (err) {
-        console.log(err)
+        logger.error("Error getting CCA profile: ", err)
         res.status(500).json({message: "something went wrong"});
         return;
     }

@@ -70,7 +70,7 @@ model CustomerCareAgent {
 }
 
 model CustomerCareAgentToken {
-  user   CustomerCareAgent @relation(fields: [userId], references: [id])
+  user   CustomerCareAgent @relation(fields: [userId], references: [id], onDelete: Cascade)
   token  String
   userId String            @unique
   id     String            @id @default(uuid())
