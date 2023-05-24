@@ -2,7 +2,7 @@ import {Prisma, PrismaClient, Rider, User} from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-interface CheckUserProps {
+export interface CheckUserProps {
     phone?: string;
     email?: string | null;
     id?: string;
