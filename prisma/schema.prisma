@@ -10,26 +10,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Gender{
-  M 
-  F 
+enum Gender {
+  M
+  F
   Other
 }
 
-model User{
-  first_name String
-  last_name String
-  phone String @unique
-  password String
-  salt String
-  avatar String?
-  email String? @unique
-  address String?
-  gender Gender? 
-  dateCreated DateTime @default(now())
-  updatedAt DateTime?
+model User {
+  first_name   String
+  last_name    String
+  phone        String    @unique
+  password     String
+  salt         String
+  avatar       String?
+  email        String?   @unique
+  address      String?
+  gender       Gender?
+  dateCreated  DateTime
+  updatedAt    DateTime?
   sessionToken String?
-  id String @id @default(uuid())
+  id           String    @id @default(uuid())
   OTP UserOTP?
 
   @@map("users")
@@ -57,9 +57,9 @@ model Rider{
   address String?
   gender Gender? 
   sessionToken String?
-  dateCreated DateTime
-  updatedAt DateTime?
-  id String @id @default(uuid())
+  dateCreated  DateTime
+  updatedAt    DateTime?
+  id           String    @id @default(uuid())
 
   @@map("riders")
 }
@@ -67,13 +67,24 @@ model Rider{
 model CustomerCareAgent {
   first_name String
   last_name  String
-  email      String   @unique
+  email      String                  @unique
   password   String
   salt       String
-  created_at  DateTime @default(now())
+  created_at DateTime                @default(now())
   updated_at DateTime?
-  is_active  Boolean  @default(false)
-  id         String      @id @default(uuid())
+  is_active  Boolean                 @default(false)
+  verified   Boolean                 @default(false)
+  token      CustomerCareAgentToken?
+  sessionToken String?
+  id         String                  @id @default(uuid())
 
   @@map("customer_care_agent")
+}
+
+model CustomerCareAgentToken {
+  user   CustomerCareAgent @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token  String
+  userId String            @unique
+  id     String            @id @default(uuid())
+  @@map("customer_care_agent_token")
 }
