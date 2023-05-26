@@ -25,7 +25,6 @@ export const checkUser = async (
     {phone, email, id}: CheckUserProps,
     select?: Prisma.UserSelect
 ): Promise<CheckUserResult | undefined> => {
-    console.log(phone, email, id);
     if (id) {
         const user = (await prisma.user.findUnique({
             where: {
