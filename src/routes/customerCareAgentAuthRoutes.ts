@@ -15,6 +15,6 @@ router.get("/create-user-account", auth, getAllCCA)
 router.post("/login", LoginCCA)
 router.patch("/create-user-account/:id", auth, UpdateCCA)
 router.get("/create-user-account/:id",auth, GetProfileCCA)
-router.get("/verify/:id/:token", auth, CCAVerification)
+router.get("/verify/:id/:token", CCAVerification)
 
 export default router;

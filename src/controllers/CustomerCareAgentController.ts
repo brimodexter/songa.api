@@ -211,7 +211,6 @@ export const UpdateCCA = async (req: Request, res: Response) => {
 
 export const GetProfileCCA = async (req: Request, res: Response) => {
     const {id} = req.params;
-
     try {
         const checkUserResult = (await checkCustomerCareAgent(
             {id: id},
@@ -226,25 +225,21 @@ export const GetProfileCCA = async (req: Request, res: Response) => {
             }
         )) as CheckCCA;
 
-        if (checkUserResult) {
+        if (checkUserResult && checkUserResult.user) {
             const {user}: { user: any | null } = checkUserResult;
-            res.status(200).json(user);
-            return;
+            return res.status(200).json(user);
         } else {
-            res.status(404).json({message: "user not found"});
-            return
+            return res.status(404).json({message: "user not found"});
         }
     } catch (err) {
         logger.error("Error getting CCA profile: ", err)
-        res.status(500).json({message: "something went wrong"});
-        return;
+        return res.status(500).json({message: "something went wrong"});
     }
 };
 
 export const CCAVerification = async (req: Request, res: Response) => {
     try {
         const {id, token} = req.params;
-        // const token =req.query.token
         const userExists: CheckCCA | undefined = await checkCustomerCareAgent({id},);
         if (userExists && userExists.user) {
             const tokenObject = await prisma.customerCareAgentToken.findFirst({
@@ -254,22 +249,22 @@ export const CCAVerification = async (req: Request, res: Response) => {
                 }
             });
             if (!tokenObject) return res.status(400).send("Invalid link");
-            const updatedPost = await prisma.customerCareAgent.update({
+            await prisma.customerCareAgent.update({
                 where: {id: req.params.id},
                 data: {verified: true},
             });
-            const deleteToken = await prisma.customerCareAgentToken.delete({
+            await prisma.customerCareAgentToken.delete({
                 where: {
                     userId: id
                 }
             })
-        } else {
-            if (!userExists) return res.status(400).send("Invalid link");
+            return res.send("email verified successfully");
         }
-        res.send("email verified successfully");
+        return res.status(400).send("Invalid link");
+
     } catch (error) {
         logger.error("Error email in verifying new CCA: ", error)
-        res.status(500).send({"error": "Internal Server Error"});
+        return res.status(500).send({"error": "Internal Server Error"});
     }
 };
 
