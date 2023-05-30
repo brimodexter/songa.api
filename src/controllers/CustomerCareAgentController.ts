@@ -6,9 +6,11 @@ import {CheckCCA, checkCustomerCareAgent} from "../helpers/user";
 import {CreateToken, VerifyToken} from "../helpers/CreateToken";
 import logger from "../helpers/logging";
 import {verifyCCA} from "../helpers/SendMail";
+import {UserType} from "../helpers/enums";
 
 const prisma = new PrismaClient()
-
+const LIMIT = 50;
+const OFFSET = 0;
 const CustomerCareAgentSchema = z.object({
         email: z.coerce.string().email().nonempty({message: 'Email is required',}),
         first_name: z.string().trim().nonempty({message: 'First name is required',}),
@@ -89,9 +91,10 @@ export const LoginCCA = async (req: Request, res: Response) => {
                     created_at: true,
                     updated_at: true,
                     is_active: true,
+                    verified: true,
                     id: true,
-                    sessionToken:true,
-                    password:true
+                    sessionToken: true,
+                    password: true
                 });
             if (userExists && userExists.user) {
                 let user = userExists.user;
@@ -102,6 +105,14 @@ export const LoginCCA = async (req: Request, res: Response) => {
                 });
                 if (!passwordMatch) {
                     res.status(401).json({message: "unauthorized"});
+                    return;
+                }
+                if (!userExists.user.verified) {
+                    res.status(401).json({message: "Kindly verify your email"});
+                    return;
+                }
+                if (!userExists.user.is_active) {
+                    res.status(401).json({message: "User is currently inactive. Contact support"});
                     return;
                 }
                 const isTokenValid = user.sessionToken && await VerifyToken(user.sessionToken);
@@ -116,7 +127,8 @@ export const LoginCCA = async (req: Request, res: Response) => {
                         first_name: user.first_name,
                         last_name: user.last_name,
                         id: user.id,
-                    } as User;
+                        type: UserType.CCA
+                    };
 
                     const token: string = await CreateToken(tokenObj);
                     const updatedUser = (await prisma.customerCareAgent.update({
@@ -135,7 +147,7 @@ export const LoginCCA = async (req: Request, res: Response) => {
                             updated_at: true,
                             is_active: true,
                             id: true,
-                            sessionToken:true
+                            sessionToken: true
                         }
                     }));
                     res.status(200).json({
@@ -168,7 +180,7 @@ export const UpdateCCA = async (req: Request, res: Response) => {
             where: {
                 id: id,
             },
-            data: data,
+            data: {...data, updated_at: new Date()},
             select: {
                 first_name: true,
                 last_name: true,
@@ -199,7 +211,6 @@ export const UpdateCCA = async (req: Request, res: Response) => {
 
 export const GetProfileCCA = async (req: Request, res: Response) => {
     const {id} = req.params;
-
     try {
         const checkUserResult = (await checkCustomerCareAgent(
             {id: id},
@@ -214,25 +225,21 @@ export const GetProfileCCA = async (req: Request, res: Response) => {
             }
         )) as CheckCCA;
 
-        if (checkUserResult) {
+        if (checkUserResult && checkUserResult.user) {
             const {user}: { user: any | null } = checkUserResult;
-            res.status(200).json(user);
-            return;
+            return res.status(200).json(user);
         } else {
-            res.status(404).json({message: "user not found"});
-            return
+            return res.status(404).json({message: "user not found"});
         }
     } catch (err) {
         logger.error("Error getting CCA profile: ", err)
-        res.status(500).json({message: "something went wrong"});
-        return;
+        return res.status(500).json({message: "something went wrong"});
     }
 };
 
 export const CCAVerification = async (req: Request, res: Response) => {
     try {
         const {id, token} = req.params;
-        // const token =req.query.token
         const userExists: CheckCCA | undefined = await checkCustomerCareAgent({id},);
         if (userExists && userExists.user) {
             const tokenObject = await prisma.customerCareAgentToken.findFirst({
@@ -242,21 +249,56 @@ export const CCAVerification = async (req: Request, res: Response) => {
                 }
             });
             if (!tokenObject) return res.status(400).send("Invalid link");
-            const updatedPost = await prisma.customerCareAgent.update({
+            await prisma.customerCareAgent.update({
                 where: {id: req.params.id},
                 data: {verified: true},
             });
-            const deleteToken = await prisma.customerCareAgentToken.delete({
+            await prisma.customerCareAgentToken.delete({
                 where: {
                     userId: id
                 }
             })
-        } else {
-            if (!userExists) return res.status(400).send("Invalid link");
+            return res.send("email verified successfully");
         }
-        res.send("email verified successfully");
+        return res.status(400).send("Invalid link");
+
     } catch (error) {
         logger.error("Error email in verifying new CCA: ", error)
-        res.status(400).send({"error": "Internal Server Error"});
+        return res.status(500).send({"error": "Internal Server Error"});
+    }
+};
+
+
+const getOffsetPagination = (query: any) => {
+    const offset = isNaN(Number(query.offset)) ? OFFSET : parseInt(query.offset);
+    const limit = isNaN(Number(query.limit)) ? LIMIT : parseInt(query.limit);
+    return {offset, limit}
+}
+export const getAllCCA = async (req: Request, res: Response) => {
+    let {query} = req;
+    const {offset, limit} = getOffsetPagination(query);
+    try {
+        const totalCount = await prisma.customerCareAgent.count();
+        let data = await prisma.customerCareAgent.findMany({
+            skip: offset,
+            take: limit,
+            orderBy: {
+                created_at: 'desc',
+            },
+            select: {
+                first_name: true,
+                last_name: true,
+                email: true,
+                created_at: true,
+                updated_at: true,
+                is_active: true,
+                verified: true,
+                id: true
+            }
+        });
+        return res.status(200).json({count: totalCount, data: data})
+    } catch (err) {
+        logger.error("Error getting paginated Customer Care Agents ", err)
+        return res.status(500).json(err);
     }
 };

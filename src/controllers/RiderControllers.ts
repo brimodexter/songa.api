@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 import { CheckRiderResult, checkRider } from "../helpers/user";
 import PasswordHash, { DecryptPassword } from "../helpers/PasswordHash";
 import { CreateToken, VerifyToken } from "../helpers/CreateToken";
+import {UserType} from "../helpers/enums";
+// import {UserType} from "../helpers/global";
 const prisma = new PrismaClient();
 
 export const CreateRiderAccount = async (req: Request, res: Response) => {
@@ -41,7 +43,8 @@ export const CreateRiderAccount = async (req: Request, res: Response) => {
       first_name: rider.first_name,
       last_name: rider.last_name,
       id: rider.id,
-    } as Rider;
+      type: UserType.RIDER
+    };
 
     const token: string = await CreateToken(tokenObj);
     //update it in the database
@@ -112,7 +115,8 @@ export const LoginRider = async (req: Request, res: Response) => {
             first_name: rider.first_name,
             last_name: rider.last_name,
             id: rider.id,
-          } as Rider;
+            type:UserType.RIDER
+          };
 
           const token: string = await CreateToken(tokenObj);
           const updatedRider = (await prisma.rider.update({
@@ -141,7 +145,8 @@ export const LoginRider = async (req: Request, res: Response) => {
           first_name: rider.first_name,
           last_name: rider.last_name,
           id: rider.id,
-        } as Rider;
+          type: UserType.RIDER
+        };
         const token: string = await CreateToken(tokenObj);
         const updatedRider = (await prisma.rider.update({
           where: {
