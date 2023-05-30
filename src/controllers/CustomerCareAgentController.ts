@@ -1,11 +1,11 @@
-import {Prisma, PrismaClient, User} from '@prisma/client'
+import {Prisma, PrismaClient} from '@prisma/client'
 import {Request, Response} from "express";
 import {SafeParseSuccess, z} from "zod";
 import PasswordHash, {DecryptPassword} from "../helpers/PasswordHash";
 import {CheckCCA, checkCustomerCareAgent} from "../helpers/user";
 import {CreateToken, VerifyToken} from "../helpers/CreateToken";
 import logger from "../helpers/logging";
-import {verifyCCA} from "../helpers/SendMail";
+import {sendResetPassword, verifyCCA} from "../helpers/SendMail";
 import {UserType} from "../helpers/enums";
 
 const prisma = new PrismaClient()
@@ -35,6 +35,13 @@ const CustomerCareAgentUpdateSchema = z.object({
     is_active: z.boolean({invalid_type_error: "isActive must be a boolean"}).optional(),
 })
 
+const PasswordResetRequestSchema = z.object({
+    email: z.coerce.string().email().nonempty({message: 'Email is required',}),
+});
+
+const PasswordResetResponseSchema = z.object({
+    password: z.string().regex(/^(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, "Minimum eight characters, at least one number and one special character:").trim().nonempty({message: 'Password is required'})
+})
 export const CustomerCareAgent = async (req: any, res: Response) => {
     try {
         let validationResponse = CustomerCareAgentSchema.safeParse(req.body);
@@ -302,3 +309,68 @@ export const getAllCCA = async (req: Request, res: Response) => {
         return res.status(500).json(err);
     }
 };
+
+export const requestPasswordResetRequest = async (req: Request, res: Response) => {
+    let validationResponse = PasswordResetRequestSchema.safeParse(req.body);
+    if (!validationResponse.success) {
+        return res.status(400).send(validationResponse.error.format());
+    }
+
+    let {data} = validationResponse as SafeParseSuccess<any>;
+    let email = data.email
+    const userExists: CheckCCA | undefined = await checkCustomerCareAgent({email});
+    if (userExists && userExists.user) {
+        await sendResetPassword(userExists.user)
+        return res.status(200).json({"message": "Email sent if email exists in our database"})
+    }
+    return res.status(400).json({email: "User does not exist"});
+};
+
+export const requestPasswordResetResponse = async (req: Request, res: Response) => {
+    try {
+        const {id, token} = req.params;
+        let validationResponse = PasswordResetResponseSchema.safeParse(req.body);
+        if (!validationResponse.success) {
+            return res.status(400).send(validationResponse.error.format());
+        }
+
+        let {data} = validationResponse as SafeParseSuccess<any>;
+        const userExists: CheckCCA | undefined = await checkCustomerCareAgent({id},);
+        if (userExists && userExists.user) {
+            const tokenObject = await prisma.customerCareAgentResetToken.findFirst({
+                where: {
+                    userId: id,
+                    token: token
+                }
+            });
+            if (!tokenObject) return res.status(400).send({"message":"Token not found"});
+            const {passwordHashed, salt} = await PasswordHash(data.password);
+            const agent = await prisma.customerCareAgent.update({
+                where: {
+                    id: id,
+                },
+                data: {password: passwordHashed, salt: salt, updated_at: new Date()},
+                select: {
+                    first_name: true,
+                    last_name: true,
+                    email: true,
+                    created_at: true,
+                    updated_at: true,
+                    is_active: true,
+                    id: true
+                }
+            });
+            await prisma.customerCareAgentResetToken.delete({
+                where: {
+                    userId: id
+                }
+            })
+            return res.status(200).json({message: "Reset successful", user: agent});
+        }
+        return res.status(400).send({message: "Invalid link"});
+
+    } catch (error) {
+        logger.error("Error in email reset response verifying new CCA: ", error)
+        return res.status(500).send({"error": "Internal Server Error"});
+    }
+}
