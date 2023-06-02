@@ -11,6 +11,7 @@ const router: Router = express.Router();
 router.post("/create-rider-account", CreateRiderAccount);
 router.post("/login-rider", LoginRider);
 router.post("/delete-rider-account/:id", DeleteRiderAccount);
+//router.post("/documents/upload/:id", RiderDocumentUpload);
 router.put("/update-rider-details/:id", UpdateRiderAccount);
 router.get("/profile/:id", GetRiderProfile);
 

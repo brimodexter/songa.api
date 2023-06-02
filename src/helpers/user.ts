@@ -7,6 +7,11 @@ export interface CheckUserProps {
     email?: string | null;
     id?: string;
 }
+export interface CheckRiderProps {
+    phone?: string;
+    email?: string | null;
+    id?: string;
+}
 
 export type CheckUserResult = {
     userPresent: boolean;
@@ -64,7 +69,7 @@ export const checkUser = async (
     return undefined;
 };
 export const checkRider = async (
-    {phone, email, id}: CheckUserProps,
+    {phone, email, id}: CheckRiderProps,
     select?: Prisma.UserSelect
 ): Promise<CheckRiderResult | undefined> => {
     console.log(phone, email, id);

@@ -19,7 +19,7 @@ app.use(cors());
 app.use("/api/users/auth", UserAuthRoutes);
 app.use("/api/riders/auth", RiderAuthRoutes);
 app.use("/api/users/auth/OTP", UserOTPRoutes);
-//app.use("/api/users/customer_agent", CustomerCareAgentRoutes);
+app.use("/api/users/customer_agent", CustomerCareAgentRoutes);
 app.get("/api/", (req: Request, res: Response) => {
     res.send("test route...");
 });
