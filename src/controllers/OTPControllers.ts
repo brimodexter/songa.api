@@ -71,7 +71,7 @@ export const SendOTP = async (req: Request, res: Response) => {
     }
 
     //send the OTP to the number
-    await SendOTPCode(otp);
+    await SendOTPCode({ otpCode: otp, number: phone });
     res
       .status(200)
       .json({ message: `OTP sent to ${phone} the code is ${otp}` });

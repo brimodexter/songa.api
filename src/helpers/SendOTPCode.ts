@@ -1,9 +1,17 @@
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(__dirname, "../../.env.example") });
+console.log(path.resolve(__dirname, "../../.env.example"));
+
 // Set your app credentials
 const credentials = {
-  apiKey: "796f3e115ac2b21f4c9771b074065b3ffc27d891d656b9b8265b735a00d7ead9",
+  apiKey: process.env.AFRICASTALKINGAPIKEY,
   //apiKey: "0ca4a69a24aed0caa5293247228c8eb0d871b4865c83b0e765863661576ac180",
-  username: "sonatest",
+  username: process.env.AFRICASTALKINGUSERNAME,
 };
+console.log(credentials);
+
 
 // Initialize the SDK
 const AfricasTalking = require("africastalking")(credentials, {
@@ -12,13 +20,17 @@ const AfricasTalking = require("africastalking")(credentials, {
 
 // Get the SMS service
 const sms = AfricasTalking.SMS;
+interface OTPProps {
+  otpCode: string | number;
+  number: string | number;
+}
 
-export async function SendOTPCode(otp: number | string) {
+export async function SendOTPCode({ otpCode, number }: OTPProps) {
   const options = {
     // Set the numbers you want to send to in international format
-    to: "+254703605544",
+    to: number,
     // Set your message
-    message: otp,
+    message: `This is the code from Songa app ${otpCode}`,
     // Set your shortCode or senderId
     //from: "MARTIN_SONGA",
   };
@@ -29,5 +41,4 @@ export async function SendOTPCode(otp: number | string) {
     .then(console.log)
     .catch((err: any) => console.log(err.message));
 }
-
-//sendMessage(56565);
+SendOTPCode({ otpCode: "3435", number: "+254703605544" });

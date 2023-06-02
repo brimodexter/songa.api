@@ -63,11 +63,27 @@ model Rider{
   sessionToken String?
   dateCreated  DateTime
   updatedAt    DateTime?
+  documents RiderDocuments?
   id           String    @id @default(uuid())
 
   @@map("riders")
 }
 
+//stores each document and its secure cloudinary link. 
+model RiderDocuments{
+  ID_front String?
+  ID_back String?
+  good_conduct String?
+  birth_certificate String?
+  license String?
+  insurance String?
+
+  rider Rider @relation(fields: [riderId], references: [id])
+  riderId String @unique
+  id String @id @default(uuid())
+  @@map("rider_documents")
+
+}
 model CustomerCareAgent {
   first_name   String
   last_name    String

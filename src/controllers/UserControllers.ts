@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 
 export const CreateUserAccount = async (req: Request, res: Response) => {
   try {
-    await prisma.user.deleteMany();
+   // await prisma.user.deleteMany();
     const { first_name, last_name, phone, password, email } = req.body as User;
     console.log(first_name, last_name, phone, password, email);
 
