@@ -6,12 +6,11 @@ console.log(path.resolve(__dirname, "../../.env.example"));
 
 // Set your app credentials
 const credentials = {
-  apiKey: process.env.AFRICASTALKINGAPIKEY,
+  apiKey: process.env.AFRICASTALKING_APIKEY,
   //apiKey: "0ca4a69a24aed0caa5293247228c8eb0d871b4865c83b0e765863661576ac180",
-  username: process.env.AFRICASTALKINGUSERNAME,
+  username: process.env.AFRICASTALKING_USERNAME,
 };
 console.log(credentials);
-
 
 // Initialize the SDK
 const AfricasTalking = require("africastalking")(credentials, {
@@ -31,8 +30,9 @@ export async function SendOTPCode({ otpCode, number }: OTPProps) {
     to: number,
     // Set your message
     message: `This is the code from Songa app ${otpCode}`,
-    // Set your shortCode or senderId
-    //from: "MARTIN_SONGA",
+    // Set your shortCode or senderId- you create an alphanumeric or send code on the africas talking dashboard
+
+    //from: process.env.AFRICASTALKING_ALPHANUMERIC,
   };
 
   // That’s it, hit send and we’ll take care of the rest
@@ -41,4 +41,5 @@ export async function SendOTPCode({ otpCode, number }: OTPProps) {
     .then(console.log)
     .catch((err: any) => console.log(err.message));
 }
-SendOTPCode({ otpCode: "3435", number: "+254703605544" });
+//SendOTPCode({ otpCode: "4321", number: "+254757478812" });
+//SendOTPCode({ otpCode: "4321", number: "+254703605544" });

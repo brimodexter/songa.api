@@ -20,7 +20,6 @@ app.use(cors());
 //routes
 app.use("/api/users/auth", UserAuthRoutes);
 app.use("/api/riders/auth", RiderAuthRoutes);
-app.use("/api/users/customer_agent", CustomerCareAgentRoutes);
 app.use("/api/points", mpesaRoutes);
 app.use("/api/users/auth/OTP", UserOTPRoutes);
 app.use("/api/users/customer_agent", CustomerCareAgentRoutes);
