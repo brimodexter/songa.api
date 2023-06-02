@@ -1,6 +1,7 @@
 {
   "name": "songa.api",
   "version": "0.0.1",
+  "type": "module",
   "description": "This is the backend application that will help run the backend of the Songa application",
   "main": "./src/index.ts",
   "scripts": {
