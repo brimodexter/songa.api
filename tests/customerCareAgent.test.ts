@@ -23,7 +23,7 @@ beforeEach(async () => {
     sendMailMock.mockClear();
     nodemailer.createTransport.mockClear();
 })
-describe('#1 Test customer care authentications', () => {
+describe('#1 Test customer care authentication Signup', () => {
     test('show error when no signup information is provided', async () => {
         const res = await request(app).post(SIGNUP_URL).send({})
         expect(res.body.email._errors[0]).toBe('Invalid email')
@@ -112,19 +112,33 @@ describe("Test user login", () => {
             "email": "dennisngeno@gmail.com",
             "password": "bsyus&673"
         }
+        // User not able to login until email is verified
         const res = await request(app).post(LOGIN_URL).send(data)
-        expect(res.body.message).toBe("login successfully, new token assigned")
-        expect(res.body.user.email).toBe('dennisngeno@gmail.com')
-        expect(res.body.user.first_name).toBe('Dennis')
-        expect(res.body.user.last_name).toBe('Ngeno')
-        expect(res.body.user.is_active).toBe(false)
-        expect(res.body.user.created_at).toBeDefined()
-        expect(res.body.user.updated_at).toBeDefined()
-        expect(res.body.user.id).toBeDefined()
-        expect(res.body.user.sessionToken).toBeDefined()
+        expect(res.body.message).toBe("Kindly verify your email")
+        await prisma.customerCareAgent.update({
+            where: {email: signupData["email"]},
+            data: {verified: true},
+        });
+        const res1 = await request(app).post(LOGIN_URL).send(data)
+        // Ensure user is active
+        expect(res1.body.message).toBe("User is currently inactive. Contact support")
+        await prisma.customerCareAgent.update({
+            where: {email: signupData["email"]},
+            data: {is_active: true},
+        });
         const res2 = await request(app).post(LOGIN_URL).send(data)
+        expect(res2.body.message).toBe("login successfully, new token assigned")
+        expect(res2.body.user.email).toBe('dennisngeno@gmail.com')
+        expect(res2.body.user.first_name).toBe('Dennis')
+        expect(res2.body.user.last_name).toBe('Ngeno')
+        expect(res2.body.user.is_active).toBe(true)
+        expect(res2.body.user.created_at).toBeDefined()
+        expect(res2.body.user.updated_at).toBeDefined()
+        expect(res2.body.user.id).toBeDefined()
+        expect(res2.body.user.sessionToken).toBeDefined()
+        const res3 = await request(app).post(LOGIN_URL).send(data)
         // ensure user is able to used old password for login
-        expect(res2.body.message).toBe("login successfully, using old token")
+        expect(res3.body.message).toBe("login successfully, using old token")
 
     })
     test('Error when no email is found', async () => {
@@ -153,27 +167,51 @@ describe("Test user login", () => {
 })
 
 describe("Test user update", () => {
-    test('successful update of user', async () => {
+    let userRes = {};
+    beforeEach(async function () {
         const signupData = {
             "email": "dennisngeno@gmail.com",
             "first_name": "Dennnis",
             "last_name": "Ngeno",
             "password": "bsyus&673"
         }
-        const userRes = await request(app).post(SIGNUP_URL).send(signupData)
-        const res = await request(app).patch(UPDATE_URL + userRes.body.id).send({
+        await request(app).post(SIGNUP_URL).send(signupData)
+        await prisma.customerCareAgent.update({
+            where: {email: signupData["email"]},
+            data: {is_active: true, verified: true},
+        });
+        this.user = await request(app).post(LOGIN_URL).send(signupData)
+    });
+    test('Unsuccessful update of user when no token is passed', async function () {
+
+        const res = await request(app).patch(UPDATE_URL + this.user.body.id).send({
             "first_name": "Adonis",
             "last_name": "walker",
+        }).expect(401).then(response => {
+            expect(response.body.message).toBe('Please pass authentication token')
         })
+    })
+
+    test('successful update of user', async function () {
+
+        const res = await request(app)
+            .patch(UPDATE_URL + this.user.body.user.id)
+            .set('Authorization', `Bearer ${this.user.body.user.sessionToken}`)
+            .send({
+                "first_name": "Adonis",
+                "last_name": "walker",
+            }).expect(200)
         expect(res.body.first_name).toBe('Adonis')
         expect(res.body.last_name).toBe('walker')
     })
-    test('show error when data is not provided', async () => {
-        const res = await request(app).patch(UPDATE_URL + 1).send({
+    test('show error when data is not provided', async function () {
+        const res = await request(app)
+            .patch(UPDATE_URL + 1)
+            .set('Authorization', `Bearer ${this.user.body.user.sessionToken}`).expect(404)
+            .send({
             "first_name": "Adonis",
             "last_name": "walker",
         })
         expect(res.body.message).toBe('user not found')
-        expect(res.statusCode).toBe(404)
     })
 });

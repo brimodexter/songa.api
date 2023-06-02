@@ -16,6 +16,10 @@ enum Gender {
   Other
 }
 
+enum MpesaTransactionType {
+  PAY_BILL
+  TILL_NUMBER
+}
 model User {
   first_name   String
   last_name    String
@@ -81,18 +85,19 @@ model RiderDocuments{
 
 }
 model CustomerCareAgent {
-  first_name String
-  last_name  String
-  email      String                  @unique
-  password   String
-  salt       String
-  created_at DateTime                @default(now())
-  updated_at DateTime?
-  is_active  Boolean                 @default(false)
-  verified   Boolean                 @default(false)
-  token      CustomerCareAgentToken?
+  first_name   String
+  last_name    String
+  email        String                  @unique
+  password     String
+  salt         String
+  created_at   DateTime                @default(now())
+  updated_at   DateTime?
+  is_active    Boolean                 @default(false)
+  verified     Boolean                 @default(false)
+  token        CustomerCareAgentToken?
+  reset_token CustomerCareAgentResetToken?
   sessionToken String?
-  id         String                  @id @default(uuid())
+  id           String                  @id @default(uuid())
 
   @@map("customer_care_agent")
 }
@@ -102,5 +107,26 @@ model CustomerCareAgentToken {
   token  String
   userId String            @unique
   id     String            @id @default(uuid())
+
   @@map("customer_care_agent_token")
+}
+
+model MpesaPayBillPayments {
+  transaction_type MpesaTransactionType
+  trans_id         String               @unique
+  trans_time       DateTime
+  trans_amount     Decimal              @db.Money
+  bill_ref_number  String?
+  sender_msisdn    String
+  sender_name      String?
+  org_account_balance Decimal              @db.Money
+}
+
+model CustomerCareAgentResetToken {
+  user   CustomerCareAgent @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token  String
+  userId String            @unique
+  id     String            @id @default(uuid())
+
+  @@map("customer_care_agent_reset_token")
 }

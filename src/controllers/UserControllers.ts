@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import PasswordHash, { DecryptPassword } from "../helpers/PasswordHash";
-import { PrismaClient, Prisma, User } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 import { CreateToken, VerifyToken } from "../helpers/CreateToken";
 import { checkUser } from "../helpers/user";
 import { CheckUserResult } from "../helpers/user";
-
+import {UserType} from "../helpers/enums";
 const prisma = new PrismaClient();
 
 //check user
@@ -44,7 +44,8 @@ export const CreateUserAccount = async (req: Request, res: Response) => {
       first_name: user.first_name,
       last_name: user.last_name,
       id: user.id,
-    } as User;
+      type: UserType.USER
+    };
 
     const token: string = await CreateToken(tokenObj);
     //update it in the database
@@ -114,7 +115,8 @@ export const LoginUser = async (req: Request, res: Response) => {
             first_name: user.first_name,
             last_name: user.last_name,
             id: user.id,
-          } as User;
+            type: UserType.USER
+          };
 
           const token: string = await CreateToken(tokenObj);
           const updatedUser = (await prisma.user.update({
@@ -143,7 +145,8 @@ export const LoginUser = async (req: Request, res: Response) => {
           first_name: user.first_name,
           last_name: user.last_name,
           id: user.id,
-        } as User;
+          type: UserType.USER
+        };
         const token: string = await CreateToken(tokenObj);
         const updatedUser = (await prisma.user.update({
           where: {
@@ -156,7 +159,7 @@ export const LoginUser = async (req: Request, res: Response) => {
         })) as User;
         const { password, ...cleanUser } = updatedUser as User;
         res.status(200).json({
-          message: "login successfull, new token assigned",
+          message: "login successfully, new token assigned",
           user: cleanUser,
         });
       }
