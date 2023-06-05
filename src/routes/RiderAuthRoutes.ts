@@ -8,7 +8,7 @@ import {
   LoginRider,
   UpdateRiderAccount,
 } from "../controllers/RiderControllers";
-import { RiderDocumentsUpload } from "../controllers/DocsUpload";
+import { RiderDocumentsUpload, getRiderDocuments } from "../controllers/RiderDocumentsControllers";
 const router: Router = express.Router();
 const storage = multer.diskStorage({
   destination: "uploads/",
@@ -32,6 +32,7 @@ router.post(
   upload.array("images", 6),
   RiderDocumentsUpload
 );
+router.get("/documents/rider/:id", getRiderDocuments)
 // router.post(
 //   "/documents/upload/:id",
 //   upload.array("images", 6),

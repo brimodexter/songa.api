@@ -20,6 +20,10 @@ interface uploadProps {
   image: string;
   docName: string;
 }
+export interface UploadResult{
+  docName: string,
+  link: string
+}
 //takes in the image in base 64 string format
 export async function UploadToCloudinary({
   username,
@@ -40,7 +44,7 @@ export async function UploadToCloudinary({
 
     console.log(`${docName}: ${secureUrl}`);
 
-    return { docName: docName, link: secureUrl };
+    return { docName: docName, link: secureUrl } as UploadResult;
   } catch (err) {
     console.log(err);
     
