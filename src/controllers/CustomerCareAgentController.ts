@@ -7,41 +7,16 @@ import {CreateToken, VerifyToken} from "../helpers/CreateToken";
 import logger from "../helpers/logging";
 import {sendResetPassword, verifyCCA} from "../helpers/SendMail";
 import {UserType} from "../helpers/enums";
+import {
+    CustomerCareAgentLoginSchema,
+    CustomerCareAgentSchema,
+    CustomerCareAgentUpdateSchema, PasswordResetRequestSchema, PasswordResetResponseSchema
+} from "./Validators/CustomerCareAgentValidator";
 
 const prisma = new PrismaClient()
 const LIMIT = 50;
 const OFFSET = 0;
-const CustomerCareAgentSchema = z.object({
-        email: z.coerce.string().email().nonempty({message: 'Email is required',}),
-        first_name: z.string().trim().nonempty({message: 'First name is required',}),
-        last_name: z.string().trim().nonempty({message: 'Last name is required',}),
-        // This regex will enforce these rules:
-        // At least one digit, (?=.*?[0-9])
-        // At least one special character, (?=.*?[#?!@$%^&*-])
-        // Minimum eight in length .{8,} (with the anchors)
-        password: z.string().regex(/^(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, "Minimum eight characters, at least one number and one special character:").trim().nonempty({message: 'Password is required'})
-    })
-;
 
-const CustomerCareAgentLoginSchema = z.object({
-        email: z.coerce.string().email().nonempty({message: 'Email is required',}),
-        password: z.string().trim().nonempty({message: 'Password is required'})
-    })
-;
-
-const CustomerCareAgentUpdateSchema = z.object({
-    first_name: z.string().trim().nonempty({message: 'First name is required',}).optional(),
-    last_name: z.string().trim().nonempty({message: 'Last name is required',}).optional(),
-    is_active: z.boolean({invalid_type_error: "isActive must be a boolean"}).optional(),
-})
-
-const PasswordResetRequestSchema = z.object({
-    email: z.coerce.string().email().nonempty({message: 'Email is required',}),
-});
-
-const PasswordResetResponseSchema = z.object({
-    password: z.string().regex(/^(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, "Minimum eight characters, at least one number and one special character:").trim().nonempty({message: 'Password is required'})
-})
 export const CustomerCareAgent = async (req: any, res: Response) => {
     try {
         let validationResponse = CustomerCareAgentSchema.safeParse(req.body);

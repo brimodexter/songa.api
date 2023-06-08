@@ -4,6 +4,7 @@ import { CheckRiderResult, checkRider } from "../helpers/user";
 import PasswordHash, { DecryptPassword } from "../helpers/PasswordHash";
 import { CreateToken, VerifyToken } from "../helpers/CreateToken";
 import {UserType} from "../helpers/enums";
+import {UpdateRiderStatusOnRegistration} from "./RidersVerification";
 // import {UserType} from "../helpers/global";
 const prisma = new PrismaClient();
 
@@ -53,7 +54,8 @@ export const CreateRiderAccount = async (req: Request, res: Response) => {
       data: { ...rider, sessionToken: token },
     })) as Rider;
     console.log(updatedRider);
-
+    // Assign Customer care agent approver if we have one who is free
+    await UpdateRiderStatusOnRegistration(updatedRider['id'])
     //return clean rider
 
     const {
