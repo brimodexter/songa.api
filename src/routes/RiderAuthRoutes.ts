@@ -12,8 +12,7 @@ import {validateRiderApprovalStatus} from "../controllers/Validators/CustomerCar
 import {auth} from "../helpers/CreateToken";
 const router: Router = express.Router();
 
-const riderEdit = [validateRiderApprovalStatus ]
-// const riderEdit = [auth,validateRiderApprovalStatus ]
+const riderEdit = [auth,validateRiderApprovalStatus ]
 router.post("/create-rider-account", CreateRiderAccount);
 router.post("/login-rider", LoginRider);
 router.post("/delete-rider-account/:id", DeleteRiderAccount);
@@ -24,10 +23,6 @@ router.post("/documents/upload/:id", RiderDocumentsUpload);
 
 router.put("/update-rider-details/:id", UpdateRiderAccount);
 router.get("/profile/:id", GetRiderProfile);
-// Ride approval
-// on rider registering assign them to CCA for approval or add them without approval
-// endpoint to update approval(whether suspended or approved, assign approver)
-// On rider being approved, check on the queue whether we have riders that are pending approval
 
 router.patch("/approval/:id", riderEdit, AssignCCAOnRiderCreation);
 

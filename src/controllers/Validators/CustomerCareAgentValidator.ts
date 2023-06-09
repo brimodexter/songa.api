@@ -3,6 +3,12 @@ import {RiderStatusEnum} from "@prisma/client";
 import {NextFunction, Request, Response} from 'express';
 import {CheckCCA, checkCustomerCareAgent, checkRider, CheckRiderResult} from "../../helpers/user";
 
+/*
+// Ride approval
+// on rider registering assign them to Customer Care Agent for approval or add them without CC agent.
+// endpoint to update approval(whether suspended or approved, assign CCA agent, message)
+// On rider being approved, check on the queue whether we have riders that are pending approval
+ */
 export const CustomerCareAgentSchema = z.object({
         email: z.coerce.string().email().nonempty({message: 'Email is required',}),
         first_name: z.string().trim().nonempty({message: 'First name is required',}),
