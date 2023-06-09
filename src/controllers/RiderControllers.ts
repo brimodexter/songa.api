@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 
 export const CreateRiderAccount = async (req: Request, res: Response) => {
   try {
-    await prisma.rider.deleteMany();
+    // await prisma.rider.deleteMany();
     const { first_name, last_name, phone, password, email } = req.body as Rider;
     console.log(first_name, last_name, phone, password, email);
 
@@ -55,7 +55,7 @@ export const CreateRiderAccount = async (req: Request, res: Response) => {
     })) as Rider;
     console.log(updatedRider);
     // Assign Customer care agent approver if we have one who is free
-    await UpdateRiderStatusOnRegistration(updatedRider['id'])
+    await UpdateRiderStatusOnRegistration(updatedRider['id'], {})
     //return clean rider
 
     const {

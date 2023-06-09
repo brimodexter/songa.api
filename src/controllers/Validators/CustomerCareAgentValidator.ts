@@ -1,7 +1,6 @@
 import {SafeParseSuccess, z} from "zod";
 import {RiderStatusEnum} from "@prisma/client";
 import {NextFunction, Request, Response} from 'express';
-import {JwtPayload} from "jsonwebtoken";
 import {CheckCCA, checkCustomerCareAgent, checkRider, CheckRiderResult} from "../../helpers/user";
 
 export const CustomerCareAgentSchema = z.object({

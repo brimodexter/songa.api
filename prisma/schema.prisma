@@ -65,7 +65,7 @@ model Rider {
   email        String?         @unique
   address      String?
   gender       Gender?
-  riderStatus  RiderStatus[]
+  riderStatus  RiderStatus?
   sessionToken String?
   dateCreated  DateTime
   updatedAt    DateTime?
@@ -76,16 +76,16 @@ model Rider {
 }
 
 model RiderStatus {
-  //todo ensure message is nullable, cca_id and status pending, should unique
+  // todo ensure message is nullable, cca_id and status pending, should unique
   // todo rider status shoould only occur once in each state
-  status     RiderStatusEnum   @default(PENDING)
-  message    String
-  created_at DateTime          @default(now())
-  rider      Rider              @relation(fields: [riderId], references: [id], onDelete: Cascade)
-  riderId    String
+  status     RiderStatusEnum    @default(PENDING)
+  message    String?
+  created_at DateTime           @default(now())
+  rider      Rider              @relation(fields: [rider_id], references: [id], onDelete: Cascade)
+  rider_id   String             @unique
   cca        CustomerCareAgent? @relation(fields: [cca_id], references: [id], onDelete: Cascade)
-  cca_id      String?
-  id         String            @id @default(uuid())
+  cca_id     String?
+  id         String             @id @default(uuid())
 
   @@map("rider_status")
 }

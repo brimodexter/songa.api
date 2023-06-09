@@ -1,63 +1,77 @@
-import {CustomerCareAgent, PrismaClient, RiderStatusEnum} from "@prisma/client";
+import {PrismaClient, RiderStatus, RiderStatusEnum} from "@prisma/client";
 import {Response} from "express";
-import {CheckCCA, checkCustomerCareAgent, checkRider} from "../helpers/user";
+import {checkRider} from "../helpers/user";
 
 const prisma = new PrismaClient({
-    log: [
-        {
-            emit: "event",
-            level: "query",
-        },
-    ],
+    // log: [
+    //     {
+    //         emit: "event",
+    //         level: "query",
+    //     },
+    // ],
 });
 
-prisma.$on("query", async (e) => {
-    console.log(`${e.query} ${e.params}`)
-});
-
+// prisma.$on("query", async (e) => {
+//     console.log(`${e.query} ${e.params}`)
+// });
+/**
+ *
+ * @param req
+ * @param res
+ * @return res 200 on success and 500 in failure, 404 when rider is not found
+ */
 export const AssignCCAOnRiderCreation = async (req: any, res: Response) => {
     // select all customer agents who are active and verified and have pending approvals
     let id = req.params['id'];
+    let {data} = req;
     const checkRiderResult = await checkRider(
         {id},
     );
     if (!(checkRiderResult && checkRiderResult.riderPresent))
         return res.status(404).json({message: "Rider not found"})
-
-    let rider_status = await prisma.riderStatus.findFirst({
+    // todo change this one to unique when we update the relationship to one on one
+    //first check if we have RiderStatus model created
+    let old_rider_status = await prisma.riderStatus.findUnique({
         where: {
-            riderId : id
+            rider_id: id
         }
     })
-    let {data} = req;
-    if (rider_status){
-        rider_status = await prisma.riderStatus.update({
+    let new_rider_status: undefined | RiderStatus;
+    if (old_rider_status) {
+        new_rider_status = await prisma.riderStatus.update({
             where: {
-                id: rider_status.id
+                id: old_rider_status.id
             },
-            data : data
+            data: data
         })
-    }else{
-        rider_status = await UpdateRiderStatusOnRegistration(id)
+        // Assign CCA only when status is being approved and avoid when it was approved before
+        if (data.status == 'APPROVED' && new_rider_status.cca_id && old_rider_status.status != "APPROVED") {
+            // Assign CCA to the earliest Rider who is not approved
+            AssignCCATORiderApproval(new_rider_status.cca_id)
+        }
+    } else {
+        new_rider_status = await UpdateRiderStatusOnRegistration(id, data)
     }
-    if(data.status == 'APPROVED' && rider_status.cca_id){
-        // Assign CCA to the earliest Rider who is not approved
-        AssignCCATORiderApproval(rider_status.cca_id)
-    }
-    return res.status(200).json(rider_status);
+
+    return res.status(200).json(new_rider_status);
 }
 
+
+/**
+ * @param {id} id of customer care agent
+ * Look for the oldest rider who is not approved and doesn't have customer care agent assigned
+ * and assign the current customer care agent to him/her
+ * @return void since it should run async
+ */
 const AssignCCATORiderApproval = async (id: string) => {
-    const userExists: CheckCCA | undefined = await checkCustomerCareAgent({id});
-    if (!(userExists && userExists.user))
-        return
     const rider_status = await prisma.riderStatus.findFirst({
-        where:{
-            status: RiderStatusEnum.PENDING
+        where: {
+            status: RiderStatusEnum.PENDING,
+            cca_id: null
         },
         orderBy: {
             created_at: 'asc',
-        },
+        }
     })
     if(rider_status){
         await prisma.riderStatus.update({
@@ -71,7 +85,8 @@ const AssignCCATORiderApproval = async (id: string) => {
     }
 }
 
-export const UpdateRiderStatusOnRegistration = async (riderId: string) => {
+export const UpdateRiderStatusOnRegistration = async (riderId: string, {status = RiderStatusEnum.PENDING,
+                                                      message= "Created automatically on user creation"}) => {
     // get one Customer Care Agent who doesn't have a pending approval else do not assign any approver
     const cca = await prisma.customerCareAgent.findFirst({
         where: {
@@ -97,9 +112,10 @@ export const UpdateRiderStatusOnRegistration = async (riderId: string) => {
     });
     return prisma.riderStatus.create({
         data: {
-            message: "Created automatically on user creation",
-            riderId: riderId,
-            cca_id: cca ? cca['id'] : null
+            message: message,
+            rider_id: riderId,
+            cca_id: cca ? cca['id'] : null,
+            status: status
         }
     });
 }
