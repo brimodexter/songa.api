@@ -3,8 +3,11 @@
   "version": "0.0.1",
   "description": "This is the backend application that will help run the backend of the Songa application",
   "main": "./src/index.ts",
+  "prisma": {
+	"schema": "./prisma/schema.prisma"
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "npx tsc",
     "migrate": "npx prisma validate && npx prisma db push",
     "test": "jest --coverage",
     "dev": "nodemon ./src/index.ts",
@@ -39,10 +42,10 @@
     "handlebars": "^4.7.7",
     "jsonwebtoken": "^9.0.0",
     "nanoid": "^4.0.2",
-    "otp-generator": "^4.0.1",
-    "twilio": "^4.11.1",
     "nodemailer": "^6.9.2",
     "nodemailer-smtp-transport": "^2.7.4",
+    "otp-generator": "^4.0.1",
+    "twilio": "^4.11.1",
     "uuid": "^9.0.0",
     "winston": "^3.8.2",
     "zod": "^3.21.4"
@@ -60,6 +63,6 @@
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.4"
+    "typescript": "^5.1.3"
   }
 }
