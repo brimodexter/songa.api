@@ -50,8 +50,6 @@ export const CreateRiderAccount = async (req: Request, res: Response) => {
       where: { id: rider.id },
       data: { ...rider, sessionToken: token },
     })) as Rider;
-    console.log(updatedRider);
-
     //return clean rider
 
     const {

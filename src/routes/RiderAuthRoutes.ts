@@ -32,7 +32,7 @@ router.post("/login-rider", LoginRider);
 router.post("/delete-rider-account/:id", DeleteRiderAccount);
 router.post(
   "/documents/upload/:id",
-  upload.array("images", 6),
+  upload.array("images", 10),
   RiderDocumentsUpload
 );
 router.get("/documents/rider/:id", getRiderDocuments);

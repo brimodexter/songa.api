@@ -2,14 +2,11 @@ import dotenv from "dotenv";
 import path from "path";
 
 dotenv.config({ path: path.resolve(__dirname, "../../.env.example") });
-console.log(path.resolve(__dirname, "../../.env.example"));
-
 // Set your app credentials
 const credentials = {
   apiKey: process.env.AFRICASTALKING_APIKEY,
   username: process.env.AFRICASTALKING_USERNAME,
 };
-
 
 // Initialize the SDK
 const AfricasTalking = require("africastalking")(credentials, {
@@ -34,9 +31,7 @@ export async function SendOTPCode({ otpCode, number }: OTPProps) {
     //from: process.env.AFRICASTALKING_ALPHANUMERIC,
   };
 
-    await sms
-    .send(options)
-    .then(console.log)
-    .catch((err: any) => console.log(err.message));
+  await sms.send(options).catch((err: any) => {
+    throw err;
+  });
 }
-

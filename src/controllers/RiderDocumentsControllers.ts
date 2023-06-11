@@ -4,21 +4,6 @@ import { CheckRiderResult, checkRider } from "../helpers/user";
 import { UploadResult, UploadToCloudinary } from "../helpers/Cloudinary";
 const prisma = new PrismaClient();
 
-//takes in an array of documents with the document name and the link in base64 format
-const images = [
-  {
-    link: "https://i.pinimg.com/236x/f7/00/da/f700da5beddbe1737f30fa6520d78330.jpg",
-    docName: "birth-cert",
-  },
-  {
-    link: "https://i.pinimg.com/236x/12/2a/ee/122aee9a6fd21cfeee9f65518a46e21b.jpg",
-    docName: "good conduct",
-  },
-  {
-    link: "https://i.pinimg.com/474x/e2/43/e3/e243e3c9ff79181e51838aa7a6c3a58a.jpg",
-    docName: "ID-front",
-  },
-];
 interface Image {
   docName: string;
   imageLink: string;
@@ -30,10 +15,7 @@ interface Props {
 export const RiderDocumentsUpload = async (req: Request, res: Response) => {
   try {
     const images = req.files;
-    console.log(images, "images", typeof images);
-
     const { id } = req.params;
-    console.log(id);
     //check rider
     const riderExists = (await checkRider({ id })) as CheckRiderResult;
     if (!riderExists?.riderPresent) {
@@ -50,12 +32,9 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
     if (hasDocuments) {
       //update the current docs
       if (Array.isArray(images)) {
-        console.log("array");
-
         for (const image of images) {
           const parts = image.originalname.split(".");
           const docName = parts[0];
-          console.log(docName);
           //result object contains {docName, secureUrl}- this will be stored in the db
           const result = (await UploadToCloudinary({
             username: `${rider?.first_name} ${rider?.last_name}`,
@@ -63,7 +42,6 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
             userId: rider!.id,
             docName: docName,
           })) as UploadResult;
-          console.log(result, "result");
           const secureUrl: string = result.link;
           const documentName: string = result.docName;
           //store secure url in the db
@@ -96,14 +74,10 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
       }
     } else {
       //create new docs for them
-
       if (Array.isArray(images)) {
-        console.log("array");
-
         for (const image of images) {
           const parts = image.originalname.split(".");
           const docName = parts[0];
-          console.log(docName);
           //result object contains {docName, secureUrl}- this will be stored in the db
           const result = (await UploadToCloudinary({
             username: `${rider?.first_name} ${rider?.last_name}`,
@@ -111,7 +85,6 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
             userId: rider!.id,
             docName: docName,
           })) as UploadResult;
-          console.log(result, "result");
           const documentName: string = result.docName;
           const secureUrl: string = result.link;
           //store secure url in the db
@@ -141,7 +114,7 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
       }
     }
   } catch (err: any) {
-    console.log(err.message);
+    res.status(400).json({message: "something went wrong"})
   }
 
   //check whether they have docs

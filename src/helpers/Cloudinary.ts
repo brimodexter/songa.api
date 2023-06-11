@@ -39,16 +39,10 @@ export async function UploadToCloudinary({
       public_id: `${username} -- ${docName}`,
       folder: `Songa-dev/Riders/${folderName}`,
     });
-
     const secureUrl = await res.secure_url;
-
-    console.log(`${docName}: ${secureUrl}`);
-
     return { docName: docName, link: secureUrl } as UploadResult;
   } catch (err) {
-    console.log(err);
-    
-    throw err;
+     throw err;
   }
 }
 
