@@ -64,9 +64,21 @@ model Rider{
   dateCreated  DateTime
   updatedAt    DateTime?
   documents RiderDocuments?
+  bikeInformation BikeInformation?
   id           String    @id @default(uuid())
 
   @@map("riders")
+}
+
+model BikeInformation {
+  id String @id @default(uuid())
+  rider Rider @relation(fields: [riderId], references: [id])
+  riderId String @unique
+  bikeType String
+  plateNumber String
+  bikePhoto String?
+  insuranceProvider String
+  insurancePolicyNumber String
 }
 
 //stores each document and its secure cloudinary link. 
