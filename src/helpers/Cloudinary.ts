@@ -10,7 +10,7 @@ const options = {
   api_key: process.env.CLOUDINARY_APIKEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 };
-//console.log(options);
+
 
 cloudinary.v2.config(options);
 

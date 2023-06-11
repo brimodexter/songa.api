@@ -1,5 +1,4 @@
 import { PrismaClient, Rider, RiderDocuments } from "@prisma/client";
-//import { checkRider } from "../helpers/user";
 import { Response, Request } from "express";
 import { CheckRiderResult, checkRider } from "../helpers/user";
 import { UploadResult, UploadToCloudinary } from "../helpers/Cloudinary";
@@ -41,7 +40,7 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
       res.status(401).json({ message: "rider does not exist" });
       return;
     }
-    const rider = riderExists.rider;
+    const rider = riderExists.rider as Rider
     //check whether has documents stored already
     const hasDocuments = (await prisma.riderDocuments.findUnique({
       where: {
@@ -87,8 +86,6 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
             },
           })) as RiderDocuments;
         }
-
-        //images?.forEach(img=> console.log(img.filename)
 
         //upload image to cloudinary
         res.status(200).json({ message: "Images updated successfully" });
@@ -148,7 +145,6 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
   }
 
   //check whether they have docs
-  //await prisma.riderDocuments.create;
 };
 export const getRiderDocuments = async (req: Request, res: Response) => {
   const { id } = req.params;
