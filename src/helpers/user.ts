@@ -72,7 +72,6 @@ export const checkRider = async (
     {phone, email, id}: CheckRiderProps,
     select?: Prisma.UserSelect
 ): Promise<CheckRiderResult | undefined> => {
-    console.log(phone, email, id);
     if (id) {
         const rider = (await prisma.rider.findUnique({
             where: {

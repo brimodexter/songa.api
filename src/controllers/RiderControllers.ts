@@ -1,21 +1,19 @@
-import { Prisma, PrismaClient, Rider } from "@prisma/client";
+import { PrismaClient, Rider } from "@prisma/client";
 import { Request, Response } from "express";
 import { CheckRiderResult, checkRider } from "../helpers/user";
 import PasswordHash, { DecryptPassword } from "../helpers/PasswordHash";
 import { CreateToken, VerifyToken } from "../helpers/CreateToken";
 import {UserType} from "../helpers/enums";
 import {UpdateRiderStatusOnRegistration} from "./RidersVerification";
-// import {UserType} from "../helpers/global";
+
 const prisma = new PrismaClient();
 
 export const CreateRiderAccount = async (req: Request, res: Response) => {
   try {
     // await prisma.rider.deleteMany();
     const { first_name, last_name, phone, password, email } = req.body as Rider;
-    console.log(first_name, last_name, phone, password, email);
 
     //check rider
-
     const riderExists = (await checkRider({
       phone,
       email,
@@ -44,7 +42,7 @@ export const CreateRiderAccount = async (req: Request, res: Response) => {
       first_name: rider.first_name,
       last_name: rider.last_name,
       id: rider.id,
-      type: UserType.RIDER
+      type: UserType.RIDER,
     };
 
     const token: string = await CreateToken(tokenObj);
@@ -53,7 +51,6 @@ export const CreateRiderAccount = async (req: Request, res: Response) => {
       where: { id: rider.id },
       data: { ...rider, sessionToken: token },
     })) as Rider;
-    console.log(updatedRider);
     // Assign Customer care agent approver if we have one who is free
     await UpdateRiderStatusOnRegistration(updatedRider['id'], {})
     //return clean rider
@@ -111,13 +108,12 @@ export const LoginRider = async (req: Request, res: Response) => {
       //verify token- if none, create a new one and update it on the db.
       if (rider.sessionToken !== null) {
         const isTokenValid = await VerifyToken(rider.sessionToken);
-        console.log("is token valid", isTokenValid);
         if (!isTokenValid) {
           const tokenObj = {
             first_name: rider.first_name,
             last_name: rider.last_name,
             id: rider.id,
-            type:UserType.RIDER
+            type: UserType.RIDER,
           };
 
           const token: string = await CreateToken(tokenObj);
@@ -147,7 +143,7 @@ export const LoginRider = async (req: Request, res: Response) => {
           first_name: rider.first_name,
           last_name: rider.last_name,
           id: rider.id,
-          type: UserType.RIDER
+          type: UserType.RIDER,
         };
         const token: string = await CreateToken(tokenObj);
         const updatedRider = (await prisma.rider.update({
@@ -175,10 +171,8 @@ export const LoginRider = async (req: Request, res: Response) => {
 export const DeleteRiderAccount = async (req: Request, res: Response) => {
   try {
     const { id }: { id: string } = req.body;
-    console.log("to be deleted", id);
 
     const riderExists = (await checkRider({ id })) as CheckRiderResult;
-    console.log(riderExists);
 
     if (riderExists?.riderPresent === false) {
       res.status(404).json({ message: "user does not exist" });
@@ -201,7 +195,6 @@ export const UpdateRiderAccount = async (req: Request, res: Response) => {
 };
 export const GetRiderProfile = async (req: Request, res: Response) => {
   const { id }: { id: string } = req.body;
-  console.log(id, "identifier");
 
   try {
     const checkRiderResult = await checkRider(

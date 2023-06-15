@@ -69,8 +69,9 @@ model Rider {
   sessionToken String?
   dateCreated  DateTime
   updatedAt    DateTime?
-  documents    RiderDocuments?
-  id           String          @id @default(uuid())
+  documents RiderDocuments?
+  bikeInformation BikeInformation?
+  id           String    @id @default(uuid())
 
   @@map("riders")
 }
@@ -89,7 +90,19 @@ model RiderStatus {
 
   @@map("rider_status")
 }
-//stores each document and its secure cloudinary link. 
+
+model BikeInformation {
+  id String @id @default(uuid())
+  rider Rider @relation(fields: [riderId], references: [id])
+  riderId String @unique
+  bikeType String
+  plateNumber String
+  bikePhoto String?
+  insuranceProvider String
+  insurancePolicyNumber String
+}
+
+//stores each document and its secure cloudinary link.
 model RiderDocuments{
   ID_front String?
   ID_back String?

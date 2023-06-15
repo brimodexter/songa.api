@@ -15,15 +15,6 @@ interface TokenPayload {
     type: UserType
 }
 
-// {
-//     "first_name": "Dennis",
-//     "last_name": "Koech",
-//     "id": "5552dbbd-b005-44ce-a54a-f924bbb5848f",
-//     "type": 1,
-//     "iat": 1685006419,
-//     "exp": 1687598419
-// }
-
 export const CreateToken = async (tokenObject: TokenPayload): Promise<string> => {
     try {
         const userToken: string = jwt.sign(tokenObject, secretKey, {
@@ -32,7 +23,6 @@ export const CreateToken = async (tokenObject: TokenPayload): Promise<string> =>
 
         return userToken;
     } catch (err) {
-        //console.log(err.message);
         throw err;
     }
 };
@@ -40,7 +30,6 @@ export const CreateToken = async (tokenObject: TokenPayload): Promise<string> =>
 export const VerifyToken = async (token: string): Promise<boolean> => {
     try {
         const isValid = await jwt.verify(token, secretKey);
-        console.log(isValid);
         return !!isValid;
     } catch (err) {
         return false;
