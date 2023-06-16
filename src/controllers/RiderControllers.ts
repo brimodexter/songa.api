@@ -3,13 +3,14 @@ import { Request, Response } from "express";
 import { CheckRiderResult, checkRider } from "../helpers/user";
 import PasswordHash, { DecryptPassword } from "../helpers/PasswordHash";
 import { CreateToken, VerifyToken } from "../helpers/CreateToken";
-import { UserType } from "../helpers/enums";
+import {UserType} from "../helpers/enums";
+import {UpdateRiderStatusOnRegistration} from "./RidersVerification";
 
 const prisma = new PrismaClient();
 
 export const CreateRiderAccount = async (req: Request, res: Response) => {
   try {
-    await prisma.rider.deleteMany();
+    // await prisma.rider.deleteMany();
     const { first_name, last_name, phone, password, email } = req.body as Rider;
 
     //check rider
@@ -50,6 +51,8 @@ export const CreateRiderAccount = async (req: Request, res: Response) => {
       where: { id: rider.id },
       data: { ...rider, sessionToken: token },
     })) as Rider;
+    // Assign Customer care agent approver if we have one who is free
+    await UpdateRiderStatusOnRegistration(updatedRider['id'], {})
     //return clean rider
 
     const {

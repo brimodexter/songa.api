@@ -1,8 +1,6 @@
 import {NextFunction, Request, Response} from 'express';
 import jwt, {JwtPayload} from "jsonwebtoken";
 import * as dotenv from "dotenv";
-import {CheckCCA, checkCustomerCareAgent, checkRider, checkUser, CheckUserResult} from "./user";
-import {CustomerCareAgent, Rider, User} from "@prisma/client";
 import {UserType} from "./enums";
 
 dotenv.config();
