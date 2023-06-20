@@ -21,7 +21,7 @@ app.use(
 );
 app.use(cors());
 //routes
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 app.use("/api/users/auth", UserAuthRoutes);
 app.use("/api/riders/auth", RiderAuthRoutes);
 app.use("/api/points", mpesaRoutes);
