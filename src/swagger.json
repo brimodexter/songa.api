@@ -1,0 +1,82 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Songa App",
+    "description": "API documentation for Songa App",
+    "version": "0.0.1"
+  },
+  "tags": [
+    {
+      "name": "Customer Care Agent",
+      "description": "Endpoints for customer care agents"
+    }
+  ],
+  "paths": {
+    "/api/customer_agent": {
+      "post": {
+        "tags": ["Customer Care Agent"],
+        "summary": "Register a new customer care agents",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerCareAgent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful user creation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerCareAgent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid inputs"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CustomerCareAgent": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "jamesndiga@gmail.com"
+          },
+          "first_name": {
+            "type": "string",
+            "example": "James"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "Ndiga"
+          },
+          "password": {
+            "type": "string",
+            "example": "Dennis4685h%62"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": false
+          },
+          "id": {
+            "type": "string",
+            "example": "jsjfjjdDennis4685h%62"
+          }
+        }
+      }
+    }
+  }
+}
