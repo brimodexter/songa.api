@@ -1,20 +1,20 @@
 {
-	"info": {
-		"_postman_id": "3583a3c3-c25f-4d0e-8cc5-febcb873422d",
-		"name": "OTP",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_uid": "27280215-3583a3c3-c25f-4d0e-8cc5-febcb873422d"
-	},
-	"item": [
-		{
-			"name": "Email",
-			"item": [],
-			"id": "6d58a8dd-d95c-4cc9-9635-9fb31ed4af60"
-		},
-		{
-			"name": "Phone number",
-			"item": [],
-			"id": "e3f0db40-b362-47e1-abfa-68053221cea0"
-		}
-	]
+  "info": {
+    "_postman_id": "3583a3c3-c25f-4d0e-8cc5-febcb873422d",
+    "name": "OTP",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_uid": "27280215-3583a3c3-c25f-4d0e-8cc5-febcb873422d"
+  },
+  "item": [
+    {
+      "name": "Email",
+      "item": [],
+      "id": "6d58a8dd-d95c-4cc9-9635-9fb31ed4af60"
+    },
+    {
+      "name": "Phone number",
+      "item": [],
+      "id": "e3f0db40-b362-47e1-abfa-68053221cea0"
+    }
+  ]
 }

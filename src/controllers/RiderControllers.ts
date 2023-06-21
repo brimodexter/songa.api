@@ -1,26 +1,25 @@
-import { Prisma, PrismaClient, Rider } from "@prisma/client";
+import { PrismaClient, Rider } from "@prisma/client";
 import { Request, Response } from "express";
 import { CheckRiderResult, checkRider } from "../helpers/user";
 import PasswordHash, { DecryptPassword } from "../helpers/PasswordHash";
 import { CreateToken, VerifyToken } from "../helpers/CreateToken";
 import {UserType} from "../helpers/enums";
-// import {UserType} from "../helpers/global";
+import {UpdateRiderStatusOnRegistration} from "./RidersVerification";
+
 const prisma = new PrismaClient();
 
 export const CreateRiderAccount = async (req: Request, res: Response) => {
   try {
-    await prisma.rider.deleteMany();
+    // await prisma.rider.deleteMany();
     const { first_name, last_name, phone, password, email } = req.body as Rider;
-    console.log(first_name, last_name, phone, password, email);
 
     //check rider
-
     const riderExists = (await checkRider({
       phone,
       email,
     })) as CheckRiderResult;
     if (riderExists.riderPresent) {
-      res.status(400).json({ message: "rider already exists" });
+      res.status(400).json({ message: 'rider already exists' });
       return;
     }
 
@@ -43,7 +42,7 @@ export const CreateRiderAccount = async (req: Request, res: Response) => {
       first_name: rider.first_name,
       last_name: rider.last_name,
       id: rider.id,
-      type: UserType.RIDER
+      type: UserType.RIDER,
     };
 
     const token: string = await CreateToken(tokenObj);
@@ -52,8 +51,8 @@ export const CreateRiderAccount = async (req: Request, res: Response) => {
       where: { id: rider.id },
       data: { ...rider, sessionToken: token },
     })) as Rider;
-    console.log(updatedRider);
-
+    // Assign Customer care agent approver if we have one who is free
+    await UpdateRiderStatusOnRegistration(updatedRider['id'], {});
     //return clean rider
 
     const {
@@ -88,12 +87,12 @@ export const LoginRider = async (req: Request, res: Response) => {
     if (checkRiderResult) {
       const { rider, riderPresent } = checkRiderResult as CheckRiderResult;
       if (!riderPresent) {
-        res.status(404).json({ message: "rider not found" });
+        res.status(404).json({ message: 'rider not found' });
         return;
       }
 
       if (phone !== rider?.phone) {
-        res.status(401).json({ message: "unauthorized" });
+        res.status(401).json({ message: 'unauthorized' });
         return;
       }
       //match passwords
@@ -103,19 +102,18 @@ export const LoginRider = async (req: Request, res: Response) => {
         passwordHashed,
       });
       if (!passwordMatch) {
-        res.status(401).json({ message: "unauthorized" });
+        res.status(401).json({ message: 'unauthorized' });
         return;
       }
       //verify token- if none, create a new one and update it on the db.
       if (rider.sessionToken !== null) {
         const isTokenValid = await VerifyToken(rider.sessionToken);
-        console.log("is token valid", isTokenValid);
         if (!isTokenValid) {
           const tokenObj = {
             first_name: rider.first_name,
             last_name: rider.last_name,
             id: rider.id,
-            type:UserType.RIDER
+            type: UserType.RIDER,
           };
 
           const token: string = await CreateToken(tokenObj);
@@ -130,13 +128,13 @@ export const LoginRider = async (req: Request, res: Response) => {
           })) as Rider;
           const { password, ...cleanRider } = updatedRider as Rider;
           res.status(200).json({
-            message: "Rider login successfull, new token assigned",
+            message: 'Rider login successfull, new token assigned',
             rider: cleanRider,
           });
         } else {
           const { password, ...cleanRider } = rider as Rider;
           res.status(200).json({
-            message: "Rider login successfull, using old token",
+            message: 'Rider login successfull, using old token',
             rider: cleanRider,
           });
         }
@@ -145,7 +143,7 @@ export const LoginRider = async (req: Request, res: Response) => {
           first_name: rider.first_name,
           last_name: rider.last_name,
           id: rider.id,
-          type: UserType.RIDER
+          type: UserType.RIDER,
         };
         const token: string = await CreateToken(tokenObj);
         const updatedRider = (await prisma.rider.update({
@@ -159,27 +157,25 @@ export const LoginRider = async (req: Request, res: Response) => {
         })) as Rider;
         const { password, ...cleanRider } = updatedRider as Rider;
         res.status(200).json({
-          message: "Rider login successfull, new token assigned",
+          message: 'Rider login successfull, new token assigned',
           rider: cleanRider,
         });
       }
     } else {
-      res.status(401).json({ message: "rider not found" });
+      res.status(401).json({ message: 'rider not found' });
     }
   } catch (err) {
-    res.status(400).json({ message: "something went wrong" });
+    res.status(400).json({ message: 'something went wrong' });
   }
 };
 export const DeleteRiderAccount = async (req: Request, res: Response) => {
   try {
     const { id }: { id: string } = req.body;
-    console.log("to be deleted", id);
 
     const riderExists = (await checkRider({ id })) as CheckRiderResult;
-    console.log(riderExists);
 
     if (riderExists?.riderPresent === false) {
-      res.status(404).json({ message: "user does not exist" });
+      res.status(404).json({ message: 'user does not exist' });
       return;
     }
     //verify session using by matching body id to the session id.
@@ -189,17 +185,16 @@ export const DeleteRiderAccount = async (req: Request, res: Response) => {
         id: rider!.id,
       },
     });
-    res.status(200).json({ message: "Delete successfull" });
+    res.status(200).json({ message: 'Delete successfull' });
   } catch (err) {
-    res.status(400).json({ message: "something went wrong" });
+    res.status(400).json({ message: 'something went wrong' });
   }
 };
 export const UpdateRiderAccount = async (req: Request, res: Response) => {
-  res.send("update-rider-accont");
+  res.send('update-rider-accont');
 };
 export const GetRiderProfile = async (req: Request, res: Response) => {
   const { id }: { id: string } = req.body;
-  console.log(id, "identifier");
 
   try {
     const checkRiderResult = await checkRider(
@@ -219,9 +214,9 @@ export const GetRiderProfile = async (req: Request, res: Response) => {
       const { rider }: { rider: Rider | null } = checkRiderResult;
       res.status(200).json(rider);
     } else {
-      res.status(400).json({ message: "rider not found" });
+      res.status(400).json({ message: 'rider not found' });
     }
   } catch (err) {
-    res.status(400).json({ message: "something went wrong" });
+    res.status(400).json({ message: 'something went wrong' });
   }
 };

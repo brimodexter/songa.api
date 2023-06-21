@@ -1,4 +1,4 @@
-import otpGenerator from "otp-generator";
+import otpGenerator from 'otp-generator';
 export const OTPGenerator = async (): Promise<string> => {
   const otp: string = await otpGenerator.generate(4, {
     upperCaseAlphabets: false,
