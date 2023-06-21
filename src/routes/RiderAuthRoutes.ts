@@ -44,6 +44,6 @@ router.get("/documents/rider/:id", getRiderDocuments);
 router.put("/update-rider-details/:id", UpdateRiderAccount);
 router.get("/profile/:id", GetRiderProfile);
 
-router.patch("/approval/:id", riderEdit, AssignCCAOnRiderCreation);
+router.patch('/approval/:id', riderEdit, AssignCCAOnRiderCreation);
 
 export default router;

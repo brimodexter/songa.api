@@ -1,8 +1,8 @@
-import cloudinary from "cloudinary";
-import dotenv from 'dotenv'
-import path from 'path'
+import cloudinary from 'cloudinary';
+import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config({ path: path.resolve(__dirname, "../../.env.example") });
+dotenv.config({ path: path.resolve(__dirname, '../../.env.example') });
 
 //create a cloudinary account using songa credentials and change here.
 const options = {

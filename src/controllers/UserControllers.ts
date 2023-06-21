@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
-import PasswordHash, { DecryptPassword } from "../helpers/PasswordHash";
-import { PrismaClient, User } from "@prisma/client";
-import { CreateToken, VerifyToken } from "../helpers/CreateToken";
-import { checkUser } from "../helpers/user";
-import { CheckUserResult } from "../helpers/user";
-import {UserType} from "../helpers/enums";
+import { Request, Response } from 'express';
+import PasswordHash, { DecryptPassword } from '../helpers/PasswordHash';
+import { PrismaClient, User } from '@prisma/client';
+import { CreateToken, VerifyToken } from '../helpers/CreateToken';
+import { checkUser } from '../helpers/user';
+import { CheckUserResult } from '../helpers/user';
+import { UserType } from '../helpers/enums';
 const prisma = new PrismaClient();
 
 //check user
@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 
 export const CreateUserAccount = async (req: Request, res: Response) => {
   try {
-   // await prisma.user.deleteMany();
+    // await prisma.user.deleteMany();
     const { first_name, last_name, phone, password, email } = req.body as User;
     console.log(first_name, last_name, phone, password, email);
 
@@ -21,7 +21,7 @@ export const CreateUserAccount = async (req: Request, res: Response) => {
 
     const userExists = (await checkUser({ phone, email })) as CheckUserResult;
     if (userExists.userPresent) {
-      res.status(400).json({ message: "user already exists" });
+      res.status(400).json({ message: 'user already exists' });
       return;
     }
 
@@ -44,7 +44,7 @@ export const CreateUserAccount = async (req: Request, res: Response) => {
       first_name: user.first_name,
       last_name: user.last_name,
       id: user.id,
-      type: UserType.USER
+      type: UserType.USER,
     };
 
     const token: string = await CreateToken(tokenObj);
@@ -88,12 +88,12 @@ export const LoginUser = async (req: Request, res: Response) => {
     if (checkUserResult) {
       const { user, userPresent } = checkUserResult as CheckUserResult;
       if (!userPresent) {
-        res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: 'User not found' });
         return;
       }
 
       if (phone !== user?.phone) {
-        res.status(401).json({ message: "unauthorized" });
+        res.status(401).json({ message: 'unauthorized' });
         return;
       }
       //match passwords
@@ -103,19 +103,19 @@ export const LoginUser = async (req: Request, res: Response) => {
         passwordHashed,
       });
       if (!passwordMatch) {
-        res.status(401).json({ message: "unauthorized" });
+        res.status(401).json({ message: 'unauthorized' });
         return;
       }
       //verify token- if none, create a new one and update it on the db.
       if (user.sessionToken !== null) {
         const isTokenValid = await VerifyToken(user.sessionToken);
-        console.log("is token valid", isTokenValid);
+        console.log('is token valid', isTokenValid);
         if (!isTokenValid) {
           const tokenObj = {
             first_name: user.first_name,
             last_name: user.last_name,
             id: user.id,
-            type: UserType.USER
+            type: UserType.USER,
           };
 
           const token: string = await CreateToken(tokenObj);
@@ -130,13 +130,13 @@ export const LoginUser = async (req: Request, res: Response) => {
           })) as User;
           const { password, ...cleanUser } = updatedUser as User;
           res.status(200).json({
-            message: "login successfull, new token assigned",
+            message: 'login successfull, new token assigned',
             user: cleanUser,
           });
         } else {
           const { password, ...cleanUser } = user as User;
           res.status(200).json({
-            message: "login successfull, using old token",
+            message: 'login successfull, using old token',
             user: cleanUser,
           });
         }
@@ -145,7 +145,7 @@ export const LoginUser = async (req: Request, res: Response) => {
           first_name: user.first_name,
           last_name: user.last_name,
           id: user.id,
-          type: UserType.USER
+          type: UserType.USER,
         };
         const token: string = await CreateToken(tokenObj);
         const updatedUser = (await prisma.user.update({
@@ -159,15 +159,15 @@ export const LoginUser = async (req: Request, res: Response) => {
         })) as User;
         const { password, ...cleanUser } = updatedUser as User;
         res.status(200).json({
-          message: "login successfully, new token assigned",
+          message: 'login successfully, new token assigned',
           user: cleanUser,
         });
       }
     } else {
-      res.status(401).json({ message: "user not found" });
+      res.status(401).json({ message: 'user not found' });
     }
   } catch (err) {
-    res.status(400).json({ message: "something went wrong" });
+    res.status(400).json({ message: 'something went wrong' });
   }
 };
 export const DeleteUserAccount = async (req: Request, res: Response) => {
@@ -175,7 +175,7 @@ export const DeleteUserAccount = async (req: Request, res: Response) => {
     const { id }: { id: string } = req.body;
     const userExists = (await checkUser({ id })) as CheckUserResult;
     if (userExists?.userPresent === false) {
-      res.status(404).json({ message: "user does not exist" });
+      res.status(404).json({ message: 'user does not exist' });
       return;
     }
     //verify session using by matching body id to the session id.
@@ -185,16 +185,16 @@ export const DeleteUserAccount = async (req: Request, res: Response) => {
         id: user!.id,
       },
     });
-    res.status(200).json({ message: "Delete successfull" });
+    res.status(200).json({ message: 'Delete successfull' });
   } catch (err) {
-    res.status(400).json({ message: "something went wrong" });
+    res.status(400).json({ message: 'something went wrong' });
   }
 };
 export const UpdateUserDetails = async (req: Request, res: Response) => {
   try {
-    res.send("update user details");
+    res.send('update user details');
   } catch (err) {
-    res.status(400).json({ message: "something went wrong" });
+    res.status(400).json({ message: 'something went wrong' });
   }
 };
 export const GetUserProfile = async (req: Request, res: Response) => {
@@ -218,9 +218,9 @@ export const GetUserProfile = async (req: Request, res: Response) => {
       const { user }: { user: User | null } = checkUserResult;
       res.status(200).json(user);
     } else {
-      res.status(400).json({ message: "user not found" });
+      res.status(400).json({ message: 'user not found' });
     }
   } catch (err) {
-    res.status(400).json({ message: "something went wrong" });
+    res.status(400).json({ message: 'something went wrong' });
   }
 };

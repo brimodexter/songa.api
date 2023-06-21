@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html>
-<head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>Email Confirmation</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body style="background-color: #e9ecef;">
-<div>
-    <h3>Hi {{name}},</h3>
-    <div>Thanks for getting started with our [customer portal]!
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body style="background-color: #e9ecef">
+    <div>
+      <h3>Hi {{name}},</h3>
+      <div>
+        Thanks for getting started with our [customer portal]! We need a little
+        more information to a confirm your email address. Click below to confirm
+        your email address:
+      </div>
 
-        We need a little more information to a confirm your email address.
+      <a href="{{url}}">link</a>
 
-        Click below to confirm your email address:
+      <div>
+        If you have problems, please paste the above URL into your web browser.
+      </div>
+      <p>{{url}}</p>
     </div>
-
-    <a href={{url}}>link</a>
-
-    <div>If you have problems, please paste the above URL into your web browser.</div>
-    <p>{{url}}</p>
-</div>
-</body>
+  </body>
 </html>

@@ -1,13 +1,16 @@
-import express from "express";
+import express from 'express';
 
 import {
-    CCAVerification,
-    CustomerCareAgent, getAllCCA,
-    GetProfileCCA,
-    LoginCCA, requestPasswordResetRequest, requestPasswordResetResponse,
-    UpdateCCA
+  CCAVerification,
+  CustomerCareAgent,
+  getAllCCA,
+  GetProfileCCA,
+  LoginCCA,
+  requestPasswordResetRequest,
+  requestPasswordResetResponse,
+  UpdateCCA,
 } from '../controllers/CustomerCareAgentController';
-import {auth} from "../helpers/CreateToken";
+import { auth } from '../helpers/CreateToken';
 
 const router=express.Router();
 router.post("", CustomerCareAgent)

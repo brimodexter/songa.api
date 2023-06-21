@@ -15,9 +15,9 @@ var options = {
   };
 app.use(bodyParser.json());
 app.use(
-    bodyParser.urlencoded({
-        extended: true,
-    })
+  bodyParser.urlencoded({
+    extended: true,
+  })
 );
 app.use(cors());
 //routes

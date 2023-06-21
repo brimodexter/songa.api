@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
-import { checkUser } from "../helpers/user";
-import { CheckUserResult } from "../helpers/user";
-import { OTPGenerator } from "../helpers/OTPgenerator";
-import { SendOTPCode } from "../helpers/SendOTPCode";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Request, Response } from 'express';
+import { checkUser } from '../helpers/user';
+import { CheckUserResult } from '../helpers/user';
+import { OTPGenerator } from '../helpers/OTPgenerator';
+import { SendOTPCode } from '../helpers/SendOTPCode';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 export const SendOTP = async (req: Request, res: Response) => {
@@ -17,7 +17,7 @@ export const SendOTP = async (req: Request, res: Response) => {
     if (!userExists.userPresent) {
       res
         .status(401)
-        .json({ message: "User with that phone number does not exist" });
+        .json({ message: 'User with that phone number does not exist' });
       return;
     }
     //check whether user has another code
@@ -45,7 +45,7 @@ export const SendOTP = async (req: Request, res: Response) => {
             code: otp,
           },
         })
-        .catch((err) => console.log("error updating record"));
+        .catch(err => console.log('error updating record'));
     } else {
       await prisma.userOTP
         .create({
@@ -55,14 +55,14 @@ export const SendOTP = async (req: Request, res: Response) => {
             phone: phone,
           },
         })
-        .catch((err) => {
+        .catch(err => {
           let errmessage;
           if (
             err.message.includes(
-              "Unique constraint failed on the fields: (`userId`)"
+              'Unique constraint failed on the fields: (`userId`)'
             )
           ) {
-            errmessage = "user already has a code";
+            errmessage = 'user already has a code';
           }
           err.message = "couldn't send code";
           res.status(400).json({ message: errmessage });
@@ -76,7 +76,7 @@ export const SendOTP = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: `OTP sent to ${phone} the code is ${otp}` });
   } catch (err) {
-    res.status(500).json({ message: "Something went wrong" });
+    res.status(500).json({ message: 'Something went wrong' });
   }
 };
 export const verifyOTP = async (req: Request, res: Response) => {
@@ -102,14 +102,14 @@ export const verifyOTP = async (req: Request, res: Response) => {
   });
   if (id === hasCode!.userId) {
     if (code === hasCode?.code) {
-      res.status(200).json({ message: "OTP code has been verified." });
+      res.status(200).json({ message: 'OTP code has been verified.' });
     } else {
-      res.status(400).json({ message: "invalid code provided" });
+      res.status(400).json({ message: 'invalid code provided' });
     }
   } else {
     res
       .status(400)
-      .json({ message: "User Id does not match the one on the phone number" });
+      .json({ message: 'User Id does not match the one on the phone number' });
   }
 
   //get code , id, and phone number
