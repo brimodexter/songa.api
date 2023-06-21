@@ -1,10 +1,10 @@
-import { PrismaClient, Rider } from "@prisma/client";
-import { Request, Response } from "express";
-import { CheckRiderResult, checkRider } from "../helpers/user";
-import PasswordHash, { DecryptPassword } from "../helpers/PasswordHash";
-import { CreateToken, VerifyToken } from "../helpers/CreateToken";
-import {UserType} from "../helpers/enums";
-import {UpdateRiderStatusOnRegistration} from "./RidersVerification";
+import { PrismaClient, Rider } from '@prisma/client';
+import { Request, Response } from 'express';
+import { CheckRiderResult, checkRider } from '../helpers/user';
+import PasswordHash, { DecryptPassword } from '../helpers/PasswordHash';
+import { CreateToken, VerifyToken } from '../helpers/CreateToken';
+import { UserType } from '../helpers/enums';
+import { UpdateRiderStatusOnRegistration } from './RidersVerification';
 
 const prisma = new PrismaClient();
 

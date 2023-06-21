@@ -1,13 +1,8 @@
 import express from 'express';
-
-import {
-  CustomerCareAgent,
-  getAllCCA,
-} from '../controllers/CustomerCareAgentController';
-import { auth } from '../helpers/CreateToken';
+import { GeoHarsh } from './Controller';
 
 const router = express.Router();
-router.post('', CustomerCareAgent);
-router.get('', auth, getAllCCA);
+// router.post('', CustomerCareAgent);
+router.get('/location', GeoHarsh);
 
 export default router;

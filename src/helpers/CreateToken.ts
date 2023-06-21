@@ -14,25 +14,27 @@ interface TokenPayload {
   type: UserType;
 }
 
-export const CreateToken = async (tokenObject: TokenPayload): Promise<string> => {
-    try {
-        const userToken: string = jwt.sign(tokenObject, secretKey, {
-            expiresIn: "30d",
-        });
+export const CreateToken = async (
+  tokenObject: TokenPayload
+): Promise<string> => {
+  try {
+    const userToken: string = jwt.sign(tokenObject, secretKey, {
+      expiresIn: '30d',
+    });
 
-        return userToken;
-    } catch (err) {
-        throw err;
-    }
+    return userToken;
+  } catch (err) {
+    throw err;
+  }
 };
 
 export const VerifyToken = async (token: string): Promise<boolean> => {
-    try {
-        const isValid = await jwt.verify(token, secretKey);
-        return !!isValid;
-    } catch (err) {
-        return false;
-    }
+  try {
+    const isValid = await jwt.verify(token, secretKey);
+    return !!isValid;
+  } catch (err) {
+    return false;
+  }
 };
 
 export interface CustomRequest extends Request {

@@ -44,6 +44,17 @@
           }
         }
       }
+    },
+    "/api/rides/location": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {

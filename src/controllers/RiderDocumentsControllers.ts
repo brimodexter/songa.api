@@ -1,7 +1,7 @@
-import { PrismaClient, Rider, RiderDocuments } from "@prisma/client";
-import { Response, Request } from "express";
-import { CheckRiderResult, checkRider } from "../helpers/user";
-import { UploadResult, UploadToCloudinary } from "../helpers/Cloudinary";
+import { PrismaClient, Rider, RiderDocuments } from '@prisma/client';
+import { Response, Request } from 'express';
+import { CheckRiderResult, checkRider } from '../helpers/user';
+import { UploadResult, UploadToCloudinary } from '../helpers/Cloudinary';
 const prisma = new PrismaClient();
 
 interface Image {
@@ -19,10 +19,10 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
     //check rider
     const riderExists = (await checkRider({ id })) as CheckRiderResult;
     if (!riderExists?.riderPresent) {
-      res.status(401).json({ message: "rider does not exist" });
+      res.status(401).json({ message: 'rider does not exist' });
       return;
     }
-    const rider = riderExists.rider as Rider
+    const rider = riderExists.rider as Rider;
     //check whether has documents stored already
     const hasDocuments = (await prisma.riderDocuments.findUnique({
       where: {
@@ -33,7 +33,7 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
       //update the current docs
       if (Array.isArray(images)) {
         for (const image of images) {
-          const parts = image.originalname.split(".");
+          const parts = image.originalname.split('.');
           const docName = parts[0];
           //result object contains {docName, secureUrl}- this will be stored in the db
           const result = (await UploadToCloudinary({
@@ -51,14 +51,14 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
             },
             data: {
               riderId: rider!.id,
-              ...(documentName === "ID_back" && { ID_back: secureUrl }),
-              ...(documentName === "ID_front" && { ID_front: secureUrl }),
-              ...(documentName === "birth_certificate" && {
+              ...(documentName === 'ID_back' && { ID_back: secureUrl }),
+              ...(documentName === 'ID_front' && { ID_front: secureUrl }),
+              ...(documentName === 'birth_certificate' && {
                 birth_certificate: secureUrl,
               }),
-              ...(documentName === "insurance" && { insurance: secureUrl }),
-              ...(documentName === "license" && { license: secureUrl }),
-              ...(documentName === "good_conduct" && {
+              ...(documentName === 'insurance' && { insurance: secureUrl }),
+              ...(documentName === 'license' && { license: secureUrl }),
+              ...(documentName === 'good_conduct' && {
                 good_conduct: secureUrl,
               }),
             },
@@ -66,17 +66,17 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
         }
 
         //upload image to cloudinary
-        res.status(200).json({ message: "Images updated successfully" });
+        res.status(200).json({ message: 'Images updated successfully' });
       } else {
         res
           .status(400)
-          .json({ message: "please provide the images in one array." });
+          .json({ message: 'please provide the images in one array.' });
       }
     } else {
       //create new docs for them
       if (Array.isArray(images)) {
         for (const image of images) {
-          const parts = image.originalname.split(".");
+          const parts = image.originalname.split('.');
           const docName = parts[0];
           //result object contains {docName, secureUrl}- this will be stored in the db
           const result = (await UploadToCloudinary({
@@ -91,14 +91,14 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
           const doc = (await prisma.riderDocuments.create({
             data: {
               riderId: rider!.id,
-              ...(documentName === "ID_back" && { ID_back: secureUrl }),
-              ...(documentName === "ID_front" && { ID_front: secureUrl }),
-              ...(documentName === "birth_certificate" && {
+              ...(documentName === 'ID_back' && { ID_back: secureUrl }),
+              ...(documentName === 'ID_front' && { ID_front: secureUrl }),
+              ...(documentName === 'birth_certificate' && {
                 birth_certificate: secureUrl,
               }),
-              ...(documentName === "insurance" && { insurance: secureUrl }),
-              ...(documentName === "license" && { license: secureUrl }),
-              ...(documentName === "good_conduct" && {
+              ...(documentName === 'insurance' && { insurance: secureUrl }),
+              ...(documentName === 'license' && { license: secureUrl }),
+              ...(documentName === 'good_conduct' && {
                 good_conduct: secureUrl,
               }),
             },
@@ -106,15 +106,15 @@ export const RiderDocumentsUpload = async (req: Request, res: Response) => {
         }
 
         //upload image to cloudinary
-        res.status(200).json({ message: "Images uploaded successfully" });
+        res.status(200).json({ message: 'Images uploaded successfully' });
       } else {
         res
           .status(400)
-          .json({ message: "please provide the images in one array." });
+          .json({ message: 'please provide the images in one array.' });
       }
     }
   } catch (err: any) {
-    res.status(400).json({message: "something went wrong"})
+    res.status(400).json({ message: 'something went wrong' });
   }
 
   //check whether they have docs
@@ -124,7 +124,7 @@ export const getRiderDocuments = async (req: Request, res: Response) => {
   //check rider
   const riderExists = (await checkRider({ id })) as CheckRiderResult;
   if (!riderExists?.riderPresent) {
-    res.status(400).json({ message: "No rider with such ID exists" });
+    res.status(400).json({ message: 'No rider with such ID exists' });
     return;
   }
   //check whether docs are available
@@ -144,8 +144,8 @@ export const getRiderDocuments = async (req: Request, res: Response) => {
   if (hasDocuments) {
     res
       .status(200)
-      .json({ message: "documents available", data: hasDocuments });
+      .json({ message: 'documents available', data: hasDocuments });
   } else {
-    res.status(400).json({ message: "No documents found" });
+    res.status(400).json({ message: 'No documents found' });
   }
 };
