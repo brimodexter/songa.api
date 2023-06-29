@@ -1,7 +1,7 @@
 import { PrismaClient, Rider, RiderDocuments } from '@prisma/client';
 import { Response, Request } from 'express';
-import { CheckRiderResult, checkRider } from '../helpers/user';
-import { UploadResult, UploadToCloudinary } from '../helpers/Cloudinary';
+import { CheckRiderResult, checkRider } from '../../helpers/user';
+import { UploadResult, UploadToCloudinary } from '../../helpers/Cloudinary';
 const prisma = new PrismaClient();
 
 interface Image {

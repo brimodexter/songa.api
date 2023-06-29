@@ -39,7 +39,7 @@ model User {
   gender       Gender?
   dateCreated  DateTime
   updatedAt    DateTime?
-  sessionToken String?
+  sessionToken String? 
   id           String    @id @default(uuid())
   OTP UserOTP?
 
