@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import s2 from '@radarlabs/s2';
+// import s2 from '@radarlabs/s2';
 
 export const GeoHarsh = (req: Request, res: Response) => {
   const user1LongLat = [-73.95772933959961, 40.71623280185081];
