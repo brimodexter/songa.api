@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:lts-alpine as dependencies
 
 WORKDIR	/usr/src/app
 
@@ -18,11 +18,13 @@ RUN ls -la ./prisma   # Check the contents of the prisma directory
 
 # RUN npm ci --only=production
 
+FROM dependencies as builder
+
+RUN npm run build
+
 COPY . .
 
 EXPOSE 3000
-
-RUN npm run build
 
 CMD [ "node", "dist/index.js" ]
 
