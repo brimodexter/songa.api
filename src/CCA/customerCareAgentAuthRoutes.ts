@@ -9,7 +9,7 @@ import {
   requestPasswordResetRequest,
   requestPasswordResetResponse,
   UpdateCCA,
-} from '../controllers/CustomerCareAgentController';
+} from './CustomerCareAgentController';
 import { auth } from '../helpers/CreateToken';
 
 const router = express.Router();

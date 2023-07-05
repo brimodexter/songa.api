@@ -4,7 +4,7 @@ import { CheckRiderResult, checkRider } from '../../helpers/user';
 import PasswordHash, { DecryptPassword } from '../../helpers/PasswordHash';
 import { CreateToken, VerifyToken } from '../../helpers/CreateToken';
 import { UserType } from '../../helpers/enums';
-import { UpdateRiderStatusOnRegistration } from '../../controllers/RidersVerification';
+import { UpdateRiderStatusOnRegistration } from '../../CCA/RidersVerification';
 
 const prisma = new PrismaClient();
 

@@ -8,8 +8,8 @@ import {
   LoginRider,
   UpdateRiderAccount,
 } from '../controllers/RiderControllers';
-import { AssignCCAOnRiderCreation } from '../../controllers/RidersVerification';
-import { validateRiderApprovalStatus } from '../../controllers/Validators/CustomerCareAgentValidator';
+import { AssignCCAOnRiderCreation } from '../../CCA/RidersVerification';
+import { validateRiderApprovalStatus } from '../../CCA/CustomerCareAgentValidator';
 import { auth } from '../../helpers/CreateToken';
 import {
   RiderDocumentsUpload,

@@ -13,7 +13,7 @@ import {
   CustomerCareAgentUpdateSchema,
   PasswordResetRequestSchema,
   PasswordResetResponseSchema,
-} from './Validators/CustomerCareAgentValidator';
+} from './CustomerCareAgentValidator';
 
 const prisma = new PrismaClient();
 const LIMIT = 50;

@@ -40,6 +40,8 @@ model User {
   dateCreated  DateTime
   updatedAt    DateTime?
   sessionToken String? 
+  latitude  Float?
+  longitude Float?
   id           String    @id @default(uuid())
   OTP UserOTP?
 
@@ -69,6 +71,9 @@ model Rider {
   sessionToken String?
   dateCreated  DateTime
   updatedAt    DateTime?
+  latitude  Float?
+  longitude Float?
+  online Boolean?
   id           String    @id @default(uuid())
   profile RiderProfile?
   @@map("riders")

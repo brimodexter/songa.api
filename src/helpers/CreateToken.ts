@@ -37,9 +37,9 @@ export const VerifyToken = async (token: string): Promise<boolean> => {
   }
 };
 
-export interface CustomRequest extends Request {
-  payload: JwtPayload;
-}
+// export interface CustomRequest extends Request {
+//   payload: JwtPayload;
+// }
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -57,7 +57,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
         return res.status(401).json(error);
       }
       if (decoded) {
-        (req as CustomRequest).payload = decoded;
+        res.locals.payload = decoded;
       }
     });
     next();

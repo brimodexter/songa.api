@@ -26,7 +26,7 @@
     },
     {
       "name": "Rides",
-      "description": "Endpoints for Rides."
+      "description": "Endpoints for Rides matching."
     }
   ],
   "paths": {
@@ -185,10 +185,10 @@
                 }
               }
             }
-          }, 
+          },
           "401": {
-            "description": "unauthorized. Wrong Credentials provided."
-            ,"content": {
+            "description": "unauthorized. Wrong Credentials provided.",
+            "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
@@ -203,33 +203,84 @@
             }
           },
           "400": {
-          "description": "Bad Request. Please try again",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "example": "Something went wrong. Please try again."
+            "description": "Bad Request. Please try again",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Something went wrong. Please try again."
+                    }
                   }
                 }
               }
             }
           }
+        }
+      }
+    },
+    "/api/rides/rider-post-locations/": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["Rides"],
+        "description": "All available riders should post their locations here",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreeRiderLocation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreeRiderLocation"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/api/rides/location": {
+    "/api/rides/user-get-nearby-riders/": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["Rides"],
-        "summary": "Get ride location",
-        "description": "Retrieve the location of a ride",
-        "parameters": [],
+        "description": "Users should get locations from here",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreeRiderLocation"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiderLocations"
+                }
+              }
+            }
           }
         }
       }
@@ -385,6 +436,39 @@
             "type": "string",
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdF9uYW1lIjoiVGVzdCIsImxhc3RfbmFtZSI6IlVzZXIiLCJpZCI6ImZiNjVhNmVmLTE4ZDgtNDRlNC1hOWNkLWJiMTZjMTZhYWFlNyIsInR5cGUiOjAsImlhdCI6MTY4ODUzMzcxMiwiZXhwIjoxNjkxMTI1NzEyfQ.p_fvZF_zgE9uPIfdiPn7N6drkTNfYnakVsklg6d1vUM"
           }
+        }
+      },
+      "FreeRiderLocation": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "integer"
+          },
+          "longitude": {
+            "type": "integer"
+          }
+        }
+      },
+      "RiderLocations": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+
+          "latitude": {
+            "type": "integer"
+          },
+          "longitude": {
+            "type": "integer"
+          }
+        }
+      },
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
         }
       }
     }
