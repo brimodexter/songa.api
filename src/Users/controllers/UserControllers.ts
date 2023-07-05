@@ -19,7 +19,7 @@ export const CreateUserAccount = async (req: Request, res: Response) => {
 
     const userExists = (await checkUser({ phone, email })) as CheckUserResult;
     if (userExists.userPresent) {
-      res.status(400).json({ message: 'user already exists' });
+      res.status(401).json({ message: 'user already exists' });
       return;
     }
 
@@ -63,7 +63,7 @@ export const CreateUserAccount = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: 'Account creation successfull', user: cleanUser });
   } catch (err: any) {
-    res.status(400).json({message: err.message});
+    res.status(400).json({ message: err.message });
   }
 };
 export const LoginUser = async (req: Request, res: Response) => {
@@ -164,7 +164,7 @@ export const LoginUser = async (req: Request, res: Response) => {
         });
       }
     } else {
-      res.status(401).json({ message: 'user not found' });
+      res.status(404).json({ message: 'user not found' });
     }
   } catch (err) {
     res.status(400).json({ message: 'something went wrong' });

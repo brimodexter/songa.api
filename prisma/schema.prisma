@@ -47,7 +47,7 @@ model User {
 }
 model UserOTP {
   id      String  @id @default(uuid())
-  user    User   @relation(fields: [userId], references: [id])
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  String   @unique
   phone String @unique
   code    String
@@ -69,11 +69,24 @@ model Rider {
   sessionToken String?
   dateCreated  DateTime
   updatedAt    DateTime?
-  documents RiderDocuments?
-  bikeInformation BikeInformation?
   id           String    @id @default(uuid())
-
+  profile RiderProfile?
   @@map("riders")
+}
+
+model RiderProfile {
+id String @id @default(uuid())
+rider Rider @relation(fields: [riderId], references: [id], onDelete: Cascade)
+riderId String @unique
+avatar String?
+address String?
+gender Gender?
+documents RiderDocuments?
+bikeInformation BikeInformation?
+location String
+
+
+@@map("rider_profiles")
 }
 
 model RiderStatus {
@@ -93,13 +106,16 @@ model RiderStatus {
 
 model BikeInformation {
   id String @id @default(uuid())
-  rider Rider @relation(fields: [riderId], references: [id])
+  rider RiderProfile @relation(fields: [riderId], references: [riderId], onDelete: Cascade)
   riderId String @unique
   bikeType String
   plateNumber String
   bikePhoto String?
   insuranceProvider String
   insurancePolicyNumber String
+ 
+
+  @@map("bike_information")
 }
 
 //stores each document and its secure cloudinary link.
@@ -111,12 +127,29 @@ model RiderDocuments{
   license String?
   insurance String?
 
-  rider Rider @relation(fields: [riderId], references: [id])
+  rider RiderProfile @relation(fields: [riderId], references: [id], onDelete: Cascade)
   riderId String @unique
   id String @id @default(uuid())
   @@map("rider_documents")
 
 }
+
+//trips
+//model Trip {
+  //id
+  //customer
+  //rider
+  //pickup point
+  //destination
+  //----estimated charge
+  //starting time
+  //ending time
+  //status
+  //current location
+  //duration-calculated.
+  //total cost- songa points deducted.
+  
+//}
 model CustomerCareAgent {
   first_name    String
   last_name     String

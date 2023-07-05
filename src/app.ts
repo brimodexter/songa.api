@@ -8,7 +8,8 @@ import RiderAuthRoutes from './Riders/routes/RiderAuthRoutes';
 import mpesaRoutes from './routes/mpesaRoutes';
 import swaggerDocument from './swagger.json';
 import UserOTPRoutes from './routes/userOTPRoutes';
-import RiderRoutes from './Ride/Routes';
+//import RiderRoutes from './Ride/Routes';
+import RiderProfileRoutes from './Riders/routes/RiderProfileRoutes'
 
 const app: Express = express();
 var options = {
@@ -29,6 +30,7 @@ app.use(
 );
 app.use('/api/users/auth', UserAuthRoutes);
 app.use('/api/riders/auth', RiderAuthRoutes);
+app.use("/api/riders/profile", RiderProfileRoutes)
 app.use('/api/points', mpesaRoutes);
 app.use('/api/users/auth/OTP', UserOTPRoutes);
 app.use('/api/customer_agent', CustomerCareAgentRoutes);
