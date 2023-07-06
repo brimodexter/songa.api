@@ -20,6 +20,13 @@ enum MpesaTransactionType {
   PAY_BILL
   TILL_NUMBER
 }
+
+enum RiderStatusEnum {
+  PENDING
+  APPROVED
+  SUSPENDED
+}
+
 model User {
   first_name   String
   last_name    String
@@ -48,40 +55,83 @@ model UserOTP {
   @@map("user_otps")
 }
 
-
-
-model Rider{
-  first_name String
-  last_name String
-  phone String @unique
-  password String
-  salt String
-  avatar String?
-  email String? @unique
-  address String?
-  gender Gender? 
+model Rider {
+  first_name   String
+  last_name    String
+  phone        String          @unique
+  password     String
+  salt         String
+  avatar       String?
+  email        String?         @unique
+  address      String?
+  gender       Gender?
+  riderStatus  RiderStatus?
   sessionToken String?
   dateCreated  DateTime
   updatedAt    DateTime?
+  documents RiderDocuments?
+  bikeInformation BikeInformation?
   id           String    @id @default(uuid())
 
   @@map("riders")
 }
 
+model RiderStatus {
+  // todo ensure message is nullable, cca_id and status pending, should unique
+  // todo rider status shoould only occur once in each state
+  status     RiderStatusEnum    @default(PENDING)
+  message    String?
+  created_at DateTime           @default(now())
+  rider      Rider              @relation(fields: [rider_id], references: [id], onDelete: Cascade)
+  rider_id   String             @unique
+  cca        CustomerCareAgent? @relation(fields: [cca_id], references: [id], onDelete: Cascade)
+  cca_id     String?
+  id         String             @id @default(uuid())
+
+  @@map("rider_status")
+}
+
+model BikeInformation {
+  id String @id @default(uuid())
+  rider Rider @relation(fields: [riderId], references: [id])
+  riderId String @unique
+  bikeType String
+  plateNumber String
+  bikePhoto String?
+  insuranceProvider String
+  insurancePolicyNumber String
+}
+
+//stores each document and its secure cloudinary link.
+model RiderDocuments{
+  ID_front String?
+  ID_back String?
+  good_conduct String?
+  birth_certificate String?
+  license String?
+  insurance String?
+
+  rider Rider @relation(fields: [riderId], references: [id])
+  riderId String @unique
+  id String @id @default(uuid())
+  @@map("rider_documents")
+
+}
 model CustomerCareAgent {
-  first_name   String
-  last_name    String
-  email        String                  @unique
-  password     String
-  salt         String
-  created_at   DateTime                @default(now())
-  updated_at   DateTime?
-  is_active    Boolean                 @default(false)
-  verified     Boolean                 @default(false)
-  token        CustomerCareAgentToken?
-  reset_token CustomerCareAgentResetToken?
-  sessionToken String?
-  id           String                  @id @default(uuid())
+  first_name    String
+  last_name     String
+  email         String                       @unique
+  password      String
+  salt          String
+  created_at    DateTime                     @default(now())
+  updated_at    DateTime?
+  is_active     Boolean                      @default(false)
+  verified      Boolean                      @default(false)
+  token         CustomerCareAgentToken?
+  riderApproval RiderStatus[]
+  reset_token   CustomerCareAgentResetToken?
+  sessionToken  String?
+  id            String                       @id @default(uuid())
 
   @@map("customer_care_agent")
 }
