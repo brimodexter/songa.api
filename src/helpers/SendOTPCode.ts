@@ -1,7 +1,7 @@
-import dotenv from "dotenv";
-import path from "path";
+import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config({ path: path.resolve(__dirname, "../../.env.example") });
+dotenv.config({ path: path.resolve(__dirname, '../../.env.example') });
 // Set your app credentials
 const credentials = {
   apiKey: process.env.AFRICASTALKING_APIKEY,
@@ -9,7 +9,7 @@ const credentials = {
 };
 
 // Initialize the SDK
-const AfricasTalking = require("africastalking")(credentials, {
+const AfricasTalking = require('africastalking')(credentials, {
   timeout: 60000,
 });
 

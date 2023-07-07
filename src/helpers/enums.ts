@@ -1,6 +1,5 @@
 export const enum UserType {
-    USER,
-    CCA,
-    RIDER
+  USER,
+  CCA,
+  RIDER,
 }
-

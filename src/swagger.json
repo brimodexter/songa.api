@@ -1,0 +1,476 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Songa App",
+    "description": "API documentation for Songa App",
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://songa-api.onrender.com/",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:3000/",
+      "description": "development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "User Journey",
+      "description": "Endpoints for Users."
+    },
+    {
+      "name": "Customer Care Agent",
+      "description": "Endpoints for customer care agents"
+    },
+    {
+      "name": "Rides",
+      "description": "Endpoints for Rides matching."
+    }
+  ],
+  "paths": {
+    "/api/customer_agent": {
+      "post": {
+        "tags": ["Customer Care Agent"],
+        "summary": "Register a new customer care agents",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerCareAgent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful user creation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerCareAgent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid inputs"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/users/auth/create-user-account": {
+      "post": {
+        "tags": ["User Journey"],
+        "summary": "This is the user account creation endpoint",
+        "description": "Provide the user's both names, phone number and password.",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Account creation successful"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/UserAccountCreationSuccess"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User Already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "user already exists"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Something went wrong. Please try again."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/auth/login-user": {
+      "post": {
+        "tags": ["User Journey"],
+        "summary": "This is the user account login endpoint",
+        "description": "Provide phone number and password",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "login successfull"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/UserLoginSuccess"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found. User has no account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized. Wrong Credentials provided.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Phone number or password provided is incorrect"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request. Please try again",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Something went wrong. Please try again."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rides/rider-post-locations/": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["Rides"],
+        "description": "All available riders should post their locations here",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreeRiderLocation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreeRiderLocation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rides/user-get-nearby-riders/": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["Rides"],
+        "description": "Users should get locations from here",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreeRiderLocation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiderLocations"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CustomerCareAgent": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "jamesndiga@gmail.com"
+          },
+          "first_name": {
+            "type": "string",
+            "example": "James"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "Ndiga"
+          },
+          "password": {
+            "type": "string",
+            "example": "Dennis4685h%62"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": false
+          },
+          "id": {
+            "type": "string",
+            "example": "jsjfjjdDennis4685h%62"
+          }
+        }
+      },
+      "UserCreation": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "example": "Martin"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "Fukuswi"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+254700300309"
+          },
+          "password": {
+            "type": "string",
+            "example": "Martinfukuswi"
+          }
+        }
+      },
+      "UserAccountCreationSuccess": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "example": "Test"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "User"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+254734567676"
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateCreated": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-07-05T05:08:32.272Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "sessionToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "id": {
+            "type": "string",
+            "example": "fb65a6ef-18d8-44e4-a9cd-bb16c16aaae7"
+          }
+        }
+      },
+      "UserLogin": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "example": "+254700300309"
+          },
+          "password": {
+            "type": "string",
+            "example": "Martinfukuswi"
+          }
+        }
+      },
+      "UserLoginSuccess": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "example": "Test"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "User"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+254734567676"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "example": "fb65a6ef-18d8-44e4-a9cd-bb16c16aaae7"
+          },
+          "sessionToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdF9uYW1lIjoiVGVzdCIsImxhc3RfbmFtZSI6IlVzZXIiLCJpZCI6ImZiNjVhNmVmLTE4ZDgtNDRlNC1hOWNkLWJiMTZjMTZhYWFlNyIsInR5cGUiOjAsImlhdCI6MTY4ODUzMzcxMiwiZXhwIjoxNjkxMTI1NzEyfQ.p_fvZF_zgE9uPIfdiPn7N6drkTNfYnakVsklg6d1vUM"
+          }
+        }
+      },
+      "FreeRiderLocation": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "integer"
+          },
+          "longitude": {
+            "type": "integer"
+          }
+        }
+      },
+      "RiderLocations": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+
+          "latitude": {
+            "type": "integer"
+          },
+          "longitude": {
+            "type": "integer"
+          }
+        }
+      },
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
+      }
+    }
+  }
+}
