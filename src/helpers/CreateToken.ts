@@ -14,30 +14,32 @@ interface TokenPayload {
   type: UserType;
 }
 
-export const CreateToken = async (tokenObject: TokenPayload): Promise<string> => {
-    try {
-        const userToken: string = jwt.sign(tokenObject, secretKey, {
-            expiresIn: "30d",
-        });
+export const CreateToken = async (
+  tokenObject: TokenPayload
+): Promise<string> => {
+  try {
+    const userToken: string = jwt.sign(tokenObject, secretKey, {
+      expiresIn: '30d',
+    });
 
-        return userToken;
-    } catch (err) {
-        throw err;
-    }
+    return userToken;
+  } catch (err) {
+    throw err;
+  }
 };
 
 export const VerifyToken = async (token: string): Promise<boolean> => {
-    try {
-        const isValid = await jwt.verify(token, secretKey);
-        return !!isValid;
-    } catch (err) {
-        return false;
-    }
+  try {
+    const isValid = await jwt.verify(token, secretKey);
+    return !!isValid;
+  } catch (err) {
+    return false;
+  }
 };
 
-export interface CustomRequest extends Request {
-  payload: JwtPayload;
-}
+// export interface CustomRequest extends Request {
+//   payload: JwtPayload;
+// }
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -55,7 +57,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
         return res.status(401).json(error);
       }
       if (decoded) {
-        (req as CustomRequest).payload = decoded;
+        res.locals.payload = decoded;
       }
     });
     next();

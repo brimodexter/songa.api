@@ -2,9 +2,9 @@ import request from 'supertest';
 import app from '../src/app';
 import { PrismaClient } from '@prisma/client';
 
-const SIGNUP_URL = '/api/customer_agent/'
-const LOGIN_URL = '/api/customer_agent/login'
-const UPDATE_URL = '/api/customer_agent/'
+const SIGNUP_URL = '/api/customer_agent/';
+const LOGIN_URL = '/api/customer_agent/login';
+const UPDATE_URL = '/api/customer_agent/';
 
 const prisma = new PrismaClient();
 

@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import PasswordHash, { DecryptPassword } from '../helpers/PasswordHash';
+import PasswordHash, { DecryptPassword } from '../../helpers/PasswordHash';
 import { PrismaClient, User } from '@prisma/client';
-import { CreateToken, VerifyToken } from '../helpers/CreateToken';
-import { checkUser } from '../helpers/user';
-import { CheckUserResult } from '../helpers/user';
-import { UserType } from '../helpers/enums';
+import { CreateToken, VerifyToken } from '../../helpers/CreateToken';
+import { checkUser } from '../../helpers/user';
+import { CheckUserResult } from '../../helpers/user';
+import { UserType } from '../../helpers/enums';
 const prisma = new PrismaClient();
 
 //check user
@@ -13,15 +13,13 @@ const prisma = new PrismaClient();
 
 export const CreateUserAccount = async (req: Request, res: Response) => {
   try {
-    // await prisma.user.deleteMany();
     const { first_name, last_name, phone, password, email } = req.body as User;
-    console.log(first_name, last_name, phone, password, email);
 
     //check user
 
     const userExists = (await checkUser({ phone, email })) as CheckUserResult;
     if (userExists.userPresent) {
-      res.status(400).json({ message: 'user already exists' });
+      res.status(401).json({ message: 'user already exists' });
       return;
     }
 
@@ -61,9 +59,11 @@ export const CreateUserAccount = async (req: Request, res: Response) => {
       salt: userSalt,
       ...cleanUser
     } = updatedUser as User;
-    res.status(200).send(cleanUser);
+    res
+      .status(200)
+      .json({ message: 'Account creation successfull', user: cleanUser });
   } catch (err: any) {
-    res.status(400).send(err.message);
+    res.status(400).json({ message: err.message });
   }
 };
 export const LoginUser = async (req: Request, res: Response) => {
@@ -109,7 +109,7 @@ export const LoginUser = async (req: Request, res: Response) => {
       //verify token- if none, create a new one and update it on the db.
       if (user.sessionToken !== null) {
         const isTokenValid = await VerifyToken(user.sessionToken);
-        console.log('is token valid', isTokenValid);
+
         if (!isTokenValid) {
           const tokenObj = {
             first_name: user.first_name,
@@ -159,12 +159,12 @@ export const LoginUser = async (req: Request, res: Response) => {
         })) as User;
         const { password, ...cleanUser } = updatedUser as User;
         res.status(200).json({
-          message: 'login successfully, new token assigned',
+          message: 'login successfull',
           user: cleanUser,
         });
       }
     } else {
-      res.status(401).json({ message: 'user not found' });
+      res.status(404).json({ message: 'user not found' });
     }
   } catch (err) {
     res.status(400).json({ message: 'something went wrong' });

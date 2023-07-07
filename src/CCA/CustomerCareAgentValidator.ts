@@ -1,7 +1,7 @@
 import { SafeParseSuccess, z } from 'zod';
 import { RiderStatusEnum } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
-import { CheckCCA, checkCustomerCareAgent } from '../../helpers/user';
+import { CheckCCA, checkCustomerCareAgent } from '../helpers/user';
 
 /*
 // Ride approval

@@ -1,5 +1,5 @@
 import path from 'path';
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'
 import logger from './logging';
 
 // Parsing the env file.

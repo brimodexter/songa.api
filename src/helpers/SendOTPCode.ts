@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
-dotenv.config({ path: path.resolve(__dirname, "../../.env.example") });
+dotenv.config({ path: path.resolve(__dirname, '../../.env.example') });
 // Set your app credentials
 const credentials = {
   apiKey: process.env.AFRICASTALKING_APIKEY,

@@ -11,7 +11,6 @@ const options = {
   api_secret: process.env.CLOUDINARY_API_SECRET,
 };
 
-
 cloudinary.v2.config(options);
 
 interface uploadProps {
@@ -20,9 +19,9 @@ interface uploadProps {
   image: string;
   docName: string;
 }
-export interface UploadResult{
-  docName: string,
-  link: string
+export interface UploadResult {
+  docName: string;
+  link: string;
 }
 //takes in the image in base 64 string format
 export async function UploadToCloudinary({
@@ -42,7 +41,6 @@ export async function UploadToCloudinary({
     const secureUrl = await res.secure_url;
     return { docName: docName, link: secureUrl } as UploadResult;
   } catch (err) {
-     throw err;
+    throw err;
   }
 }
-
