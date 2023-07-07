@@ -6,6 +6,8 @@ import { Prisma, PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient({});
 
 export const RiderPostLocation = async (req: any, res: Response) => {
+  // Available
+  // On riding
   if (typeof app.locals.groups == 'undefined') {
     app.locals.groups = {};
   }
@@ -68,7 +70,9 @@ export const UserGetNearbyRides = async (req: Request, res: Response) => {
     locations: Array.from(records),
   });
 };
-export const UserRequestRide = (req: Request, res: Response) => {};
+export const UserRequestRide = (req: Request, res: Response) => {
+  //pickup(coordinates) -> dropoff(coordinates)
+};
 export const RiderGetRequestedRides = (req: Request, res: Response) => {};// websockets
 export const RiderAcceptRide = (req: Request, res: Response) => {};//websockets
 export const UserNotifiedRide = (req: Request, res: Response) => {};//websockets
