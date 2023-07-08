@@ -1,7 +1,7 @@
 steps:
   # Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/songa-386805/songa-api', '.']
+    args: ['build', '-t', 'gcr.io/songa-386805/songa-api', '.', '--build-arg', 'ENV_FILE=.env']
   # Push the Docker image to Google Container Registry (GCR)
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/songa-386805/songa-api']

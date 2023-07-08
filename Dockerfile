@@ -15,10 +15,17 @@ RUN npm run build
 # Stage 3: Final Image
 FROM node:lts-alpine
 WORKDIR /usr/src/app
+
+# Set NODE_ENV to "development" by default
+ARG NODE_ENV=development
+
+# Copy the .env file only if NODE_ENV is "development"
+COPY .env ./
+
+# Copy other files
 COPY --from=builder /usr/src/app/package*.json ./
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY .env .   
 
 # Install production dependencies
 # RUN npm ci --only=production
