@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-// import s2 from '@radarlabs/s2';
-import {S2} from 's2-geometry';
+import { S2 } from 's2-geometry';
 import app from '../app';
 import { Prisma, PrismaClient } from '@prisma/client';
 
@@ -23,7 +22,6 @@ export const RiderPostLocation = async (req: any, res: Response) => {
       },
     });
     const rider_cell_id = S2.keyToId(S2.latLngToKey(latitude, longitude, 11));
-    console.log(rider_cell_id);
     const group = app.locals.groups[rider_cell_id] || new Set();
     group.add(res.locals.payload.id);
     app.locals.groups[rider_cell_id] = group;
@@ -48,7 +46,6 @@ export const UserGetNearbyRides = async (req: Request, res: Response) => {
   }
   const { latitude, longitude } = req.body;
   const customer_point_s2 = S2.keyToId(S2.latLngToKey(latitude, longitude, 11));
-  console.log(customer_point_s2);
   const close_rider_points = app.locals.groups[customer_point_s2];
   if (!close_rider_points) {
     return res.status(404).json({ message: 'No riders found' });
@@ -72,9 +69,9 @@ export const UserGetNearbyRides = async (req: Request, res: Response) => {
 export const UserRequestRide = (req: Request, res: Response) => {
   //pickup(coordinates) -> dropoff(coordinates)
 };
-export const RiderGetRequestedRides = (req: Request, res: Response) => {};// websockets
-export const RiderAcceptRide = (req: Request, res: Response) => {};//websockets
-export const UserNotifiedRide = (req: Request, res: Response) => {};//websockets
-export const UserRiderShareLocation = (req: Request, res: Response) => {};//websockets
-export const UserCancelRide = (req: Request, res: Response) => {};//Rest -> driver websockets
-export const RiderCancelRide = (req: Request, res: Response) => {};//rest -> . user via sockets
+export const RiderGetRequestedRides = (req: Request, res: Response) => {}; // websockets
+export const RiderAcceptRide = (req: Request, res: Response) => {}; //websockets
+export const UserNotifiedRide = (req: Request, res: Response) => {}; //websockets
+export const UserRiderShareLocation = (req: Request, res: Response) => {}; //websockets
+export const UserCancelRide = (req: Request, res: Response) => {}; //Rest -> driver websockets
+export const RiderCancelRide = (req: Request, res: Response) => {}; //rest -> . user via sockets
