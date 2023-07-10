@@ -1,9 +1,15 @@
 {
   "name": "songa.api",
   "version": "0.0.1",
-  "type": "Commonjs",
+  "type": "commonjs",
+  "engines": {
+    "node": "18.16.0"
+  },  
   "description": "This is the backend application that will help run the backend of the Songa application",
   "main": "./src/index.ts",
+  "prisma": {
+	"schema": "./prisma/schema.prisma"
+  },
   "scripts": {
     "build": "npx tsc",
     "migrate": "npx prisma validate && npx prisma db push",
@@ -11,6 +17,8 @@
     "dev": "nodemon ./src/index.ts",
     "start:dev": "npx ts-node ./src/index.ts",
     "prod": "node ./dist/index.js",
+    "docker:dev": "concurrently \"docker build -t songa-api .\" \"docker run -p 3000:3000 songa-api\"",
+    "docker:run-dev": "nodemon ./dist/index.js",
     "lint": "npx eslint src",
     "format": "prettier src --write \"**/*.+(js|ts|json)\""
   },

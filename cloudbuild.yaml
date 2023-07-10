@@ -1,0 +1,19 @@
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/songa-386805/songa-api', '.', '--build-arg', 'ENV_FILE=.env']
+  # Push the Docker image to Google Container Registry (GCR)
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/songa-386805/songa-api']
+  # Deploy the image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'songa-api'
+      - '--image=gcr.io/songa-386805/songa-api'
+      - '--platform=managed'
+      - '--region=us-east1'
+      - '--allow-unauthenticated'
+      - '--port=3000'
