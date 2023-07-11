@@ -1,0 +1,26 @@
+# Dockerfile for development environment
+# This Dockerfile is used to build an image for development purposes
+# It installs development dependencies and runs the application in development mode
+
+# Base image
+FROM node:18.16.0
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY . .
+RUN npx prisma generate
+COPY .env ./
+
+# Expose port (if needed)
+EXPOSE 3000
+
+# Run the application in development mode
+CMD ["npm", "run", "dev"]
