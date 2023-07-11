@@ -34,7 +34,7 @@ app.use('/api/riders/profile', RiderProfileRoutes);
 app.use('/api/points', mpesaRoutes);
 app.use('/api/users/auth/OTP', UserOTPRoutes);
 app.use('/api/customer_agent', CustomerCareAgentRoutes);
-// app.use('/api/rides', RiderRoutes);
+app.use('/api/rides', RiderRoutes);
 app.get('/api/', (req: Request, res: Response) => {
   res.send('test route...');
 });

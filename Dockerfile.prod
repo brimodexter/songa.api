@@ -1,0 +1,24 @@
+# Dockerfile for production environment
+# This Dockerfile is used to build an image for production purposes
+# It installs production dependencies, compiles the TypeScript code, and runs the application in production mode
+
+# Base image
+FROM node:18.16.0
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json files
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm install --only=production
+
+# Copy the compiled TypeScript code
+COPY ./dist ./dist
+
+# Expose port (if needed)
+EXPOSE 3000
+
+# Run the application in production mode
+CMD ["npm", "run", "prod"]
